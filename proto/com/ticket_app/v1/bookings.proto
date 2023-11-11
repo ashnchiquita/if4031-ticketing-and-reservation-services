@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package com.ticket_app.v1;
+
+import "google/protobuf/timestamp.proto";
+
+enum BookingStatus {
+    PENDING = 0;
+    CONFIRMED = 1;
+    CANCELLED = 2;
+}
+
+message Booking {
+    string id = 1;
+    string seat_id = 2;
+    string user_id = 3;
+    BookingStatus status = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
+}
+
+message BookingRequest {
+    string seat_id = 1;
+    string user_id = 2;
+}
+
+message BookingResponse {
+    string id = 1;
+    string seat_id = 2;
+    string user_id = 3;
+    BookingStatus status = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
+}
+
+message BookingsRequest {
+    optional string seat_id = 1;
+    optional string user_id = 2;
+}
+
+message BookingCancelRequest {
+    string id = 1;
+}
+
+message BookingConfirmRequest {
+    string id = 1;
+}
+
+message BookingCreateRequest {
+    string seat_id = 1;
+    string user_id = 2;
+}
+
+message BookingUpdateRequest {
+    string id = 1;
+    string seat_id = 2;
+    string user_id = 3;
+    BookingStatus status = 4;
+}
+
+service Bookings {
+    rpc GetBooking (BookingRequest) returns (BookingResponse);
+    rpc GetBookings (BookingsRequest) returns (stream BookingResponse);
+    rpc CreateBooking (BookingCreateRequest) returns (BookingResponse);
+    rpc UpdateBooking (BookingUpdateRequest) returns (BookingResponse);
+    rpc CancelBooking (BookingCancelRequest) returns (BookingResponse);
+}
