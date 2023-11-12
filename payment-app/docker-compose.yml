@@ -1,0 +1,35 @@
+version: '3.0'
+services:
+  payment:
+    build: .
+    ports:
+      - 3003:3000
+    hostname: payment
+    env_file: .env
+    volumes:
+      - ./src:/usr/src/app/src
+    depends_on:
+      payment-db:
+        condition: service_healthy
+    networks:
+      - payment-network
+
+  payment-db:
+    image: scylladb/scylla
+    ports:
+      - '9042:9042'
+    hostname: payment-db
+    volumes:
+      - ./scylla:/var/lib/scylla
+    healthcheck:
+      test: ['CMD-SHELL', '[ $$(nodetool statusgossip) = running ]']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: always
+    networks:
+      - payment-network
+
+networks:
+  payment-network:
+    driver: bridge
