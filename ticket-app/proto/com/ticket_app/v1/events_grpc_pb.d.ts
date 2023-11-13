@@ -16,23 +16,23 @@ interface IEventsService extends grpc.ServiceDefinition<grpc.UntypedServiceImple
     deleteEvent: IEventsService_IDeleteEvent;
 }
 
-interface IEventsService_IGetEvent extends grpc.MethodDefinition<com_ticket_app_v1_events_pb.EventRequest, com_ticket_app_v1_events_pb.EventResponse> {
+interface IEventsService_IGetEvent extends grpc.MethodDefinition<com_ticket_app_v1_events_pb.EventRequest, com_ticket_app_v1_events_pb.GetEventResponse> {
     path: "/com.ticket_app.v1.Events/GetEvent";
     requestStream: false;
     responseStream: false;
     requestSerialize: grpc.serialize<com_ticket_app_v1_events_pb.EventRequest>;
     requestDeserialize: grpc.deserialize<com_ticket_app_v1_events_pb.EventRequest>;
-    responseSerialize: grpc.serialize<com_ticket_app_v1_events_pb.EventResponse>;
-    responseDeserialize: grpc.deserialize<com_ticket_app_v1_events_pb.EventResponse>;
+    responseSerialize: grpc.serialize<com_ticket_app_v1_events_pb.GetEventResponse>;
+    responseDeserialize: grpc.deserialize<com_ticket_app_v1_events_pb.GetEventResponse>;
 }
-interface IEventsService_IGetEvents extends grpc.MethodDefinition<com_ticket_app_v1_events_pb.EventsRequest, com_ticket_app_v1_events_pb.EventResponse> {
+interface IEventsService_IGetEvents extends grpc.MethodDefinition<com_ticket_app_v1_events_pb.EventsRequest, com_ticket_app_v1_events_pb.GetEventsResponse> {
     path: "/com.ticket_app.v1.Events/GetEvents";
     requestStream: false;
     responseStream: true;
     requestSerialize: grpc.serialize<com_ticket_app_v1_events_pb.EventsRequest>;
     requestDeserialize: grpc.deserialize<com_ticket_app_v1_events_pb.EventsRequest>;
-    responseSerialize: grpc.serialize<com_ticket_app_v1_events_pb.EventResponse>;
-    responseDeserialize: grpc.deserialize<com_ticket_app_v1_events_pb.EventResponse>;
+    responseSerialize: grpc.serialize<com_ticket_app_v1_events_pb.GetEventsResponse>;
+    responseDeserialize: grpc.deserialize<com_ticket_app_v1_events_pb.GetEventsResponse>;
 }
 interface IEventsService_ICreateEvent extends grpc.MethodDefinition<com_ticket_app_v1_events_pb.CreateEventRequest, com_ticket_app_v1_events_pb.ModifyEventResponse> {
     path: "/com.ticket_app.v1.Events/CreateEvent";
@@ -65,19 +65,19 @@ interface IEventsService_IDeleteEvent extends grpc.MethodDefinition<com_ticket_a
 export const EventsService: IEventsService;
 
 export interface IEventsServer extends grpc.UntypedServiceImplementation {
-    getEvent: grpc.handleUnaryCall<com_ticket_app_v1_events_pb.EventRequest, com_ticket_app_v1_events_pb.EventResponse>;
-    getEvents: grpc.handleServerStreamingCall<com_ticket_app_v1_events_pb.EventsRequest, com_ticket_app_v1_events_pb.EventResponse>;
+    getEvent: grpc.handleUnaryCall<com_ticket_app_v1_events_pb.EventRequest, com_ticket_app_v1_events_pb.GetEventResponse>;
+    getEvents: grpc.handleServerStreamingCall<com_ticket_app_v1_events_pb.EventsRequest, com_ticket_app_v1_events_pb.GetEventsResponse>;
     createEvent: grpc.handleUnaryCall<com_ticket_app_v1_events_pb.CreateEventRequest, com_ticket_app_v1_events_pb.ModifyEventResponse>;
     updateEvent: grpc.handleUnaryCall<com_ticket_app_v1_events_pb.UpdateEventRequest, com_ticket_app_v1_events_pb.ModifyEventResponse>;
     deleteEvent: grpc.handleUnaryCall<com_ticket_app_v1_events_pb.DeleteEventRequest, com_ticket_app_v1_events_pb.ModifyEventResponse>;
 }
 
 export interface IEventsClient {
-    getEvent(request: com_ticket_app_v1_events_pb.EventRequest, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.EventResponse) => void): grpc.ClientUnaryCall;
-    getEvent(request: com_ticket_app_v1_events_pb.EventRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.EventResponse) => void): grpc.ClientUnaryCall;
-    getEvent(request: com_ticket_app_v1_events_pb.EventRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.EventResponse) => void): grpc.ClientUnaryCall;
-    getEvents(request: com_ticket_app_v1_events_pb.EventsRequest, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<com_ticket_app_v1_events_pb.EventResponse>;
-    getEvents(request: com_ticket_app_v1_events_pb.EventsRequest, metadata?: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<com_ticket_app_v1_events_pb.EventResponse>;
+    getEvent(request: com_ticket_app_v1_events_pb.EventRequest, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.GetEventResponse) => void): grpc.ClientUnaryCall;
+    getEvent(request: com_ticket_app_v1_events_pb.EventRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.GetEventResponse) => void): grpc.ClientUnaryCall;
+    getEvent(request: com_ticket_app_v1_events_pb.EventRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.GetEventResponse) => void): grpc.ClientUnaryCall;
+    getEvents(request: com_ticket_app_v1_events_pb.EventsRequest, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<com_ticket_app_v1_events_pb.GetEventsResponse>;
+    getEvents(request: com_ticket_app_v1_events_pb.EventsRequest, metadata?: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<com_ticket_app_v1_events_pb.GetEventsResponse>;
     createEvent(request: com_ticket_app_v1_events_pb.CreateEventRequest, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.ModifyEventResponse) => void): grpc.ClientUnaryCall;
     createEvent(request: com_ticket_app_v1_events_pb.CreateEventRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.ModifyEventResponse) => void): grpc.ClientUnaryCall;
     createEvent(request: com_ticket_app_v1_events_pb.CreateEventRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.ModifyEventResponse) => void): grpc.ClientUnaryCall;
@@ -91,11 +91,11 @@ export interface IEventsClient {
 
 export class EventsClient extends grpc.Client implements IEventsClient {
     constructor(address: string, credentials: grpc.ChannelCredentials, options?: Partial<grpc.ClientOptions>);
-    public getEvent(request: com_ticket_app_v1_events_pb.EventRequest, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.EventResponse) => void): grpc.ClientUnaryCall;
-    public getEvent(request: com_ticket_app_v1_events_pb.EventRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.EventResponse) => void): grpc.ClientUnaryCall;
-    public getEvent(request: com_ticket_app_v1_events_pb.EventRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.EventResponse) => void): grpc.ClientUnaryCall;
-    public getEvents(request: com_ticket_app_v1_events_pb.EventsRequest, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<com_ticket_app_v1_events_pb.EventResponse>;
-    public getEvents(request: com_ticket_app_v1_events_pb.EventsRequest, metadata?: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<com_ticket_app_v1_events_pb.EventResponse>;
+    public getEvent(request: com_ticket_app_v1_events_pb.EventRequest, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.GetEventResponse) => void): grpc.ClientUnaryCall;
+    public getEvent(request: com_ticket_app_v1_events_pb.EventRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.GetEventResponse) => void): grpc.ClientUnaryCall;
+    public getEvent(request: com_ticket_app_v1_events_pb.EventRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.GetEventResponse) => void): grpc.ClientUnaryCall;
+    public getEvents(request: com_ticket_app_v1_events_pb.EventsRequest, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<com_ticket_app_v1_events_pb.GetEventsResponse>;
+    public getEvents(request: com_ticket_app_v1_events_pb.EventsRequest, metadata?: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<com_ticket_app_v1_events_pb.GetEventsResponse>;
     public createEvent(request: com_ticket_app_v1_events_pb.CreateEventRequest, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.ModifyEventResponse) => void): grpc.ClientUnaryCall;
     public createEvent(request: com_ticket_app_v1_events_pb.CreateEventRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.ModifyEventResponse) => void): grpc.ClientUnaryCall;
     public createEvent(request: com_ticket_app_v1_events_pb.CreateEventRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: com_ticket_app_v1_events_pb.ModifyEventResponse) => void): grpc.ClientUnaryCall;

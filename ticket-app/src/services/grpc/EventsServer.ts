@@ -1,7 +1,7 @@
 import db from "@/database/drizzle";
 import { events } from "@/models";
 import { IEventsServer } from "@/proto/com/ticket_app/v1/events_grpc_pb";
-import { CreateEventRequest, DeleteEventRequest, EventRequest, EventResponse, EventSeat, EventsRequest, ModifyEventResponse, UpdateEventRequest } from "@/proto/com/ticket_app/v1/events_pb";
+import { CreateEventRequest, DeleteEventRequest, EventRequest, GetEventResponse, EventSeat, EventsRequest, ModifyEventResponse, UpdateEventRequest, GetEventsResponse } from "@/proto/com/ticket_app/v1/events_pb";
 import { authenticate, mapSeatStatus } from "@/utils";
 import {  ServerUnaryCall, ServerWritableStream, ServiceError, UntypedHandleCall, handleUnaryCall, sendUnaryData } from "@grpc/grpc-js";
 import { Status } from "@grpc/grpc-js/build/src/constants";
@@ -10,8 +10,8 @@ import { eq } from "drizzle-orm";
 export class EventsServer implements IEventsServer {
   [name: string]: UntypedHandleCall;
 
-  private createEventResponse(event: any) {
-    const eventResponse = new EventResponse();
+  private createGetEventResponse(event: any) {
+    const eventResponse = new GetEventResponse();
     eventResponse.setId(event.id);
     eventResponse.setTitle(event.title);
     if (!event.seats) {
@@ -37,7 +37,7 @@ export class EventsServer implements IEventsServer {
     return eventResponse;
   }
 
-    async getEvent(call: ServerUnaryCall<EventRequest, EventResponse>, callback: sendUnaryData<EventResponse>) {
+    async getEvent(call: ServerUnaryCall<EventRequest, GetEventResponse>, callback: sendUnaryData<GetEventResponse>) {
       await authenticate(call,(data) => callback(data));
       try {
         const eventId = call.request.getId();
@@ -67,7 +67,7 @@ export class EventsServer implements IEventsServer {
       }
   
       console.log(`getEvent: returning ${event.title} (id: ${event.id}).`);
-      callback(null, this.createEventResponse(event));
+      callback(null, this.createGetEventResponse(event));
       } catch (err) {
         const error: ServiceError = {
           code: Status.INTERNAL,
@@ -80,7 +80,7 @@ export class EventsServer implements IEventsServer {
       }
     }
 
-    async getEvents(call: ServerWritableStream<EventsRequest, EventResponse>) {
+    async getEvents(call: ServerWritableStream<EventsRequest, GetEventsResponse>) {
       console.log('getEvents: streaming all events.')
         await authenticate(call, (data) => call.emit('error',data));
         try {
@@ -100,7 +100,10 @@ export class EventsServer implements IEventsServer {
   
           if (eventList) {
             eventList.forEach((event) => {
-              call.write(this.createEventResponse(event));
+              const eventResponse = new GetEventsResponse();
+              eventResponse.setId(event.id);
+              eventResponse.setTitle(event.title);
+              call.write(eventResponse);
             })
           }
   

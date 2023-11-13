@@ -38,17 +38,6 @@ function deserialize_com_ticket_app_v1_EventRequest(buffer_arg) {
   return com_ticket_app_v1_events_pb.EventRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_com_ticket_app_v1_EventResponse(arg) {
-  if (!(arg instanceof com_ticket_app_v1_events_pb.EventResponse)) {
-    throw new Error('Expected argument of type com.ticket_app.v1.EventResponse');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_com_ticket_app_v1_EventResponse(buffer_arg) {
-  return com_ticket_app_v1_events_pb.EventResponse.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
 function serialize_com_ticket_app_v1_EventsRequest(arg) {
   if (!(arg instanceof com_ticket_app_v1_events_pb.EventsRequest)) {
     throw new Error('Expected argument of type com.ticket_app.v1.EventsRequest');
@@ -58,6 +47,28 @@ function serialize_com_ticket_app_v1_EventsRequest(arg) {
 
 function deserialize_com_ticket_app_v1_EventsRequest(buffer_arg) {
   return com_ticket_app_v1_events_pb.EventsRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_com_ticket_app_v1_GetEventResponse(arg) {
+  if (!(arg instanceof com_ticket_app_v1_events_pb.GetEventResponse)) {
+    throw new Error('Expected argument of type com.ticket_app.v1.GetEventResponse');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_com_ticket_app_v1_GetEventResponse(buffer_arg) {
+  return com_ticket_app_v1_events_pb.GetEventResponse.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_com_ticket_app_v1_GetEventsResponse(arg) {
+  if (!(arg instanceof com_ticket_app_v1_events_pb.GetEventsResponse)) {
+    throw new Error('Expected argument of type com.ticket_app.v1.GetEventsResponse');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_com_ticket_app_v1_GetEventsResponse(buffer_arg) {
+  return com_ticket_app_v1_events_pb.GetEventsResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_com_ticket_app_v1_ModifyEventResponse(arg) {
@@ -89,22 +100,22 @@ var EventsService = exports.EventsService = {
     requestStream: false,
     responseStream: false,
     requestType: com_ticket_app_v1_events_pb.EventRequest,
-    responseType: com_ticket_app_v1_events_pb.EventResponse,
+    responseType: com_ticket_app_v1_events_pb.GetEventResponse,
     requestSerialize: serialize_com_ticket_app_v1_EventRequest,
     requestDeserialize: deserialize_com_ticket_app_v1_EventRequest,
-    responseSerialize: serialize_com_ticket_app_v1_EventResponse,
-    responseDeserialize: deserialize_com_ticket_app_v1_EventResponse,
+    responseSerialize: serialize_com_ticket_app_v1_GetEventResponse,
+    responseDeserialize: deserialize_com_ticket_app_v1_GetEventResponse,
   },
   getEvents: {
     path: '/com.ticket_app.v1.Events/GetEvents',
     requestStream: false,
     responseStream: true,
     requestType: com_ticket_app_v1_events_pb.EventsRequest,
-    responseType: com_ticket_app_v1_events_pb.EventResponse,
+    responseType: com_ticket_app_v1_events_pb.GetEventsResponse,
     requestSerialize: serialize_com_ticket_app_v1_EventsRequest,
     requestDeserialize: deserialize_com_ticket_app_v1_EventsRequest,
-    responseSerialize: serialize_com_ticket_app_v1_EventResponse,
-    responseDeserialize: deserialize_com_ticket_app_v1_EventResponse,
+    responseSerialize: serialize_com_ticket_app_v1_GetEventsResponse,
+    responseDeserialize: deserialize_com_ticket_app_v1_GetEventsResponse,
   },
   createEvent: {
     path: '/com.ticket_app.v1.Events/CreateEvent',

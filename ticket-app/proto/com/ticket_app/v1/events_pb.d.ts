@@ -76,34 +76,6 @@ export namespace EventRequest {
     }
 }
 
-export class EventResponse extends jspb.Message { 
-    getId(): string;
-    setId(value: string): EventResponse;
-    getTitle(): string;
-    setTitle(value: string): EventResponse;
-    clearSeatsList(): void;
-    getSeatsList(): Array<EventSeat>;
-    setSeatsList(value: Array<EventSeat>): EventResponse;
-    addSeats(value?: EventSeat, index?: number): EventSeat;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): EventResponse.AsObject;
-    static toObject(includeInstance: boolean, msg: EventResponse): EventResponse.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: EventResponse, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): EventResponse;
-    static deserializeBinaryFromReader(message: EventResponse, reader: jspb.BinaryReader): EventResponse;
-}
-
-export namespace EventResponse {
-    export type AsObject = {
-        id: string,
-        title: string,
-        seatsList: Array<EventSeat.AsObject>,
-    }
-}
-
 export class EventsRequest extends jspb.Message { 
 
     hasTitle(): boolean;
@@ -144,6 +116,57 @@ export class ModifyEventResponse extends jspb.Message {
 }
 
 export namespace ModifyEventResponse {
+    export type AsObject = {
+        id: string,
+        title: string,
+    }
+}
+
+export class GetEventResponse extends jspb.Message { 
+    getId(): string;
+    setId(value: string): GetEventResponse;
+    getTitle(): string;
+    setTitle(value: string): GetEventResponse;
+    clearSeatsList(): void;
+    getSeatsList(): Array<EventSeat>;
+    setSeatsList(value: Array<EventSeat>): GetEventResponse;
+    addSeats(value?: EventSeat, index?: number): EventSeat;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): GetEventResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: GetEventResponse): GetEventResponse.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: GetEventResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): GetEventResponse;
+    static deserializeBinaryFromReader(message: GetEventResponse, reader: jspb.BinaryReader): GetEventResponse;
+}
+
+export namespace GetEventResponse {
+    export type AsObject = {
+        id: string,
+        title: string,
+        seatsList: Array<EventSeat.AsObject>,
+    }
+}
+
+export class GetEventsResponse extends jspb.Message { 
+    getId(): string;
+    setId(value: string): GetEventsResponse;
+    getTitle(): string;
+    setTitle(value: string): GetEventsResponse;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): GetEventsResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: GetEventsResponse): GetEventsResponse.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: GetEventsResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): GetEventsResponse;
+    static deserializeBinaryFromReader(message: GetEventsResponse, reader: jspb.BinaryReader): GetEventsResponse;
+}
+
+export namespace GetEventsResponse {
     export type AsObject = {
         id: string,
         title: string,
