@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  client-service-app:
+    build: .
+    ports:
+      - 3333:3333
+    hostname: client-service-app
+    env_file: .env
+    volumes:
+      - ./:/usr/app
+    depends_on:
+      - client-service-db
+  client-service-db:
+    image: postgres:alpine
+    ports:
+      - 5435:5432
+    hostname: client-service-db
+    env_file: .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
