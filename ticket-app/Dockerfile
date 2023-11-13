@@ -1,15 +1,10 @@
 FROM node:20-alpine
-WORKDIR /src
-COPY package* .
-COPY .env .
-
-RUN npm i
+WORKDIR /usr/src/app
 COPY . .
 
-COPY proto ./proto
+RUN npm i
 
 RUN npm run build
-ENV NODE_ENV=production
 
 EXPOSE 8001
 EXPOSE 8002
