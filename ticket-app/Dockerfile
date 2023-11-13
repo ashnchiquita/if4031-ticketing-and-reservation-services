@@ -11,6 +11,6 @@ COPY proto ./proto
 RUN npm run build
 ENV NODE_ENV=production
 
-EXPOSE 3001
-EXPOSE 3002
+EXPOSE 8001
+EXPOSE 8002
 CMD ["npm", "run" ,"serve"]

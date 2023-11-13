@@ -26,7 +26,7 @@ function startgRPC() {
     // gRPC Server
     const grpcPort = process.env.GRPC_PORT || 3001
     console.log('grpcPort', process.env.GRPC_PORT)
-    const uri = `localhost:${grpcPort}`;
+    const uri = `0.0.0.0:${grpcPort}`;
     
     grpcServer.bindAsync(uri, ServerCredentials.createInsecure(),
         (err, port) => {

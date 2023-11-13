@@ -81,6 +81,7 @@ export class EventsServer implements IEventsServer {
     }
 
     async getEvents(call: ServerWritableStream<EventsRequest, EventResponse>) {
+      console.log('getEvents: streaming all events.')
         await authenticate(call, (data) => call.emit('error',data));
         try {
 

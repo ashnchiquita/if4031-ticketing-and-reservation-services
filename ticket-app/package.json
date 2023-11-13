@@ -7,7 +7,7 @@
     "dev": "export NODE_ENV=dev && rm -rf ./dist && nodemon",
     "protobuf:build": "sh build.sh",
     "build": "echo \"Building project\" && rm -rf ./dist && export NODE_ENV=production && npx tsc",
-    "serve": "export NODE_ENV=production && node ./dist/index.js",
+    "serve": "export NODE_ENV=production GRPC_VERBOSITY=DEBUG GRPC_TRACE=all && node ./dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
