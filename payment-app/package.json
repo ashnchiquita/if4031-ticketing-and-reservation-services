@@ -26,6 +26,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "cassandra-driver": "^4.7.2"
+    "cassandra-driver": "^4.7.2",
+    "dotenv": "^16.3.1"
   }
 }
