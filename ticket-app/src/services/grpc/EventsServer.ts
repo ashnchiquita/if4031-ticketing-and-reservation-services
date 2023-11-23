@@ -2,7 +2,7 @@ import db from "@/database/drizzle";
 import { events } from "@/models";
 import { IEventsServer } from "@/proto/com/ticket_app/v1/events_grpc_pb";
 import { CreateEventRequest, DeleteEventRequest, EventRequest, GetEventResponse, EventSeat, EventsRequest, ModifyEventResponse, UpdateEventRequest, GetEventsResponse } from "@/proto/com/ticket_app/v1/events_pb";
-import { authenticate, mapSeatStatus } from "@/utils";
+import { authenticate, mapStringToSeatStatus } from "@/utils";
 import {  ServerUnaryCall, ServerWritableStream, ServiceError, UntypedHandleCall, handleUnaryCall, sendUnaryData } from "@grpc/grpc-js";
 import { Status } from "@grpc/grpc-js/build/src/constants";
 import { eq } from "drizzle-orm";
@@ -10,7 +10,7 @@ import { eq } from "drizzle-orm";
 export class EventsServer implements IEventsServer {
   [name: string]: UntypedHandleCall;
 
-  private createGetEventResponse(event: any) {
+  private _createGetEventResponse(event: any) {
     const eventResponse = new GetEventResponse();
     eventResponse.setId(event.id);
     eventResponse.setTitle(event.title);
@@ -22,14 +22,14 @@ export class EventsServer implements IEventsServer {
       const eventSeat = new EventSeat();
       eventSeat.setId(seat.id);
       eventSeat.setNumber(seat.number);
-      eventSeat.setStatus(mapSeatStatus(seat.status));
+      eventSeat.setStatus(mapStringToSeatStatus(seat.status));
       return eventSeat;
     }))
 
     return eventResponse;
   }
 
-  private createModifyEventResponse(event: any) {
+  private _createModifyEventResponse(event: any) {
     const eventResponse = new ModifyEventResponse();
     eventResponse.setId(event.id);
     eventResponse.setTitle(event.title);
@@ -38,7 +38,7 @@ export class EventsServer implements IEventsServer {
   }
 
     async getEvent(call: ServerUnaryCall<EventRequest, GetEventResponse>, callback: sendUnaryData<GetEventResponse>) {
-      await authenticate(call,(data) => callback(data));
+      // await authenticate(call,(data) => callback(data));
       try {
         const eventId = call.request.getId();
         const event = await db.query.events.findFirst({
@@ -67,8 +67,9 @@ export class EventsServer implements IEventsServer {
       }
   
       console.log(`getEvent: returning ${event.title} (id: ${event.id}).`);
-      callback(null, this.createGetEventResponse(event));
+      callback(null, this._createGetEventResponse(event));
       } catch (err) {
+        console.log(err);
         const error: ServiceError = {
           code: Status.INTERNAL,
           details: `Internal server error.`,
@@ -81,10 +82,8 @@ export class EventsServer implements IEventsServer {
     }
 
     async getEvents(call: ServerWritableStream<EventsRequest, GetEventsResponse>) {
-      console.log('getEvents: streaming all events.')
-        await authenticate(call, (data) => call.emit('error',data));
+        // await authenticate(call, (data) => call.emit('error',data));
         try {
-
           console.log(`getEvents: streaming all events.`);
           const eventList = await db.query.events.findMany({
             with:{
@@ -121,9 +120,9 @@ export class EventsServer implements IEventsServer {
     }
 
     async createEvent(call: ServerUnaryCall<CreateEventRequest, ModifyEventResponse>, callback: sendUnaryData<ModifyEventResponse>) {
-      await authenticate(call,(data) => callback(data));
+      // await authenticate(call,(data) => callback(data));
       try {
-
+        console.log(`createEvent: creating event with title ${call.request.getTitle()}.`);
         const res = await db.insert(events).values({
           title: call.request.getTitle(),
         }).returning({
@@ -132,7 +131,7 @@ export class EventsServer implements IEventsServer {
         })
   
         const event = res[0];
-        callback(null, this.createModifyEventResponse(event));
+        callback(null, this._createModifyEventResponse(event));
       } catch(err) {
         console.log(err);
         const error: ServiceError = {
@@ -147,16 +146,19 @@ export class EventsServer implements IEventsServer {
     }
 
     async updateEvent(call: ServerUnaryCall<UpdateEventRequest, ModifyEventResponse>, callback: sendUnaryData<ModifyEventResponse>) {
-      await authenticate(call,(data) => callback(data));
-
+      // await authenticate(call,(data) => callback(data));
       try {
-
+        console.log(`updateEvent: updating event with ID ${call.request.getId()}.`);
         const eventId = call.request.getId();
-        const event = await db.query.events.findFirst({
-          where: eq(events.id, eventId),
-        })
   
-        if (!event) {
+        const res = await db.update(events).set({
+          title: call.request.getTitle(),
+        }).where(eq(events.id, eventId)).returning({
+          id: events.id,
+          title: events.title,
+        })
+
+        if (!res[0]) {
           const error: ServiceError = {
             code: Status.NOT_FOUND,
             details: `Event with ID ${eventId} does not exist.`,
@@ -168,15 +170,8 @@ export class EventsServer implements IEventsServer {
           return;
         }
   
-        const res = await db.update(events).set({
-          title: call.request.getTitle(),
-        }).where(eq(events.id, eventId)).returning({
-          id: events.id,
-          title: events.title,
-        })
-  
         const updatedEvent = res[0];
-        callback(null, this.createModifyEventResponse(updatedEvent));
+        callback(null, this._createModifyEventResponse(updatedEvent));
       } catch (err) {
         console.log(err);
         const error: ServiceError = {
@@ -191,7 +186,7 @@ export class EventsServer implements IEventsServer {
     }
 
     async deleteEvent(call: ServerUnaryCall<DeleteEventRequest, ModifyEventResponse>, callback: sendUnaryData<ModifyEventResponse>) {
-      await authenticate(call,(data) => callback(data));
+      // await authenticate(call,(data) => callback(data));
 
       try {
         const eventId = call.request.getId();
@@ -211,8 +206,8 @@ export class EventsServer implements IEventsServer {
           return;
         }
   
-        await db.delete(events).where(eq(events.id, eventId)).returning({ id: events.id, title: events.title });
-        callback(null, this.createModifyEventResponse(event));
+        await db.delete(events).where(eq(events.id, eventId))
+        callback(null, this._createModifyEventResponse(event));
       } catch(err) {
         console.log(err);
         const error: ServiceError = {

@@ -3,6 +3,7 @@
 'use strict';
 var grpc = require('@grpc/grpc-js');
 var com_ticket_app_v1_seats_pb = require('../../../com/ticket_app/v1/seats_pb.js');
+var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
 
 function serialize_com_ticket_app_v1_CreateSeatRequest(arg) {
   if (!(arg instanceof com_ticket_app_v1_seats_pb.CreateSeatRequest)) {
@@ -48,17 +49,6 @@ function deserialize_com_ticket_app_v1_SeatResponse(buffer_arg) {
   return com_ticket_app_v1_seats_pb.SeatResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_com_ticket_app_v1_SeatsRequest(arg) {
-  if (!(arg instanceof com_ticket_app_v1_seats_pb.SeatsRequest)) {
-    throw new Error('Expected argument of type com.ticket_app.v1.SeatsRequest');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_com_ticket_app_v1_SeatsRequest(buffer_arg) {
-  return com_ticket_app_v1_seats_pb.SeatsRequest.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
 function serialize_com_ticket_app_v1_UpdateSeatRequest(arg) {
   if (!(arg instanceof com_ticket_app_v1_seats_pb.UpdateSeatRequest)) {
     throw new Error('Expected argument of type com.ticket_app.v1.UpdateSeatRequest');
@@ -68,6 +58,17 @@ function serialize_com_ticket_app_v1_UpdateSeatRequest(arg) {
 
 function deserialize_com_ticket_app_v1_UpdateSeatRequest(buffer_arg) {
   return com_ticket_app_v1_seats_pb.UpdateSeatRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_google_protobuf_Empty(arg) {
+  if (!(arg instanceof google_protobuf_empty_pb.Empty)) {
+    throw new Error('Expected argument of type google.protobuf.Empty');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_google_protobuf_Empty(buffer_arg) {
+  return google_protobuf_empty_pb.Empty.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 
@@ -87,10 +88,10 @@ var SeatsService = exports.SeatsService = {
     path: '/com.ticket_app.v1.Seats/GetSeats',
     requestStream: false,
     responseStream: true,
-    requestType: com_ticket_app_v1_seats_pb.SeatsRequest,
+    requestType: google_protobuf_empty_pb.Empty,
     responseType: com_ticket_app_v1_seats_pb.SeatResponse,
-    requestSerialize: serialize_com_ticket_app_v1_SeatsRequest,
-    requestDeserialize: deserialize_com_ticket_app_v1_SeatsRequest,
+    requestSerialize: serialize_google_protobuf_Empty,
+    requestDeserialize: deserialize_google_protobuf_Empty,
     responseSerialize: serialize_com_ticket_app_v1_SeatResponse,
     responseDeserialize: deserialize_com_ticket_app_v1_SeatResponse,
   },

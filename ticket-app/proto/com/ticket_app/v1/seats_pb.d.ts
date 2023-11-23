@@ -5,6 +5,7 @@
 /* eslint-disable */
 
 import * as jspb from "google-protobuf";
+import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 
 export class Seat extends jspb.Message { 
     getId(): string;
@@ -58,10 +59,12 @@ export namespace SeatRequest {
 export class SeatResponse extends jspb.Message { 
     getId(): string;
     setId(value: string): SeatResponse;
-    getNumber(): string;
-    setNumber(value: string): SeatResponse;
+    getNumber(): number;
+    setNumber(value: number): SeatResponse;
     getStatus(): SeatStatus;
     setStatus(value: SeatStatus): SeatResponse;
+    getEventId(): string;
+    setEventId(value: string): SeatResponse;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): SeatResponse.AsObject;
@@ -76,34 +79,15 @@ export class SeatResponse extends jspb.Message {
 export namespace SeatResponse {
     export type AsObject = {
         id: string,
-        number: string,
+        number: number,
         status: SeatStatus,
-    }
-}
-
-export class SeatsRequest extends jspb.Message { 
-    getEventId(): string;
-    setEventId(value: string): SeatsRequest;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): SeatsRequest.AsObject;
-    static toObject(includeInstance: boolean, msg: SeatsRequest): SeatsRequest.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: SeatsRequest, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): SeatsRequest;
-    static deserializeBinaryFromReader(message: SeatsRequest, reader: jspb.BinaryReader): SeatsRequest;
-}
-
-export namespace SeatsRequest {
-    export type AsObject = {
         eventId: string,
     }
 }
 
 export class CreateSeatRequest extends jspb.Message { 
-    getNumber(): string;
-    setNumber(value: string): CreateSeatRequest;
+    getNumber(): number;
+    setNumber(value: number): CreateSeatRequest;
     getEventId(): string;
     setEventId(value: string): CreateSeatRequest;
 
@@ -119,7 +103,7 @@ export class CreateSeatRequest extends jspb.Message {
 
 export namespace CreateSeatRequest {
     export type AsObject = {
-        number: string,
+        number: number,
         eventId: string,
     }
 }
@@ -127,10 +111,12 @@ export namespace CreateSeatRequest {
 export class UpdateSeatRequest extends jspb.Message { 
     getId(): string;
     setId(value: string): UpdateSeatRequest;
-    getNumber(): string;
-    setNumber(value: string): UpdateSeatRequest;
+    getNumber(): number;
+    setNumber(value: number): UpdateSeatRequest;
     getStatus(): SeatStatus;
     setStatus(value: SeatStatus): UpdateSeatRequest;
+    getEventId(): string;
+    setEventId(value: string): UpdateSeatRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): UpdateSeatRequest.AsObject;
@@ -145,8 +131,9 @@ export class UpdateSeatRequest extends jspb.Message {
 export namespace UpdateSeatRequest {
     export type AsObject = {
         id: string,
-        number: string,
+        number: number,
         status: SeatStatus,
+        eventId: string,
     }
 }
 

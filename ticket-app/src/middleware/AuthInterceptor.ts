@@ -1,9 +1,9 @@
-import { UntypedServiceImplementation, sendUnaryData } from "@grpc/grpc-js";
+import { sendUnaryData } from "@grpc/grpc-js";
 import { Status } from "@grpc/grpc-js/build/src/constants";
 import { ServerSurfaceCall } from "@grpc/grpc-js/build/src/server-call";
 import bcrypt from 'bcrypt';
 
-function authMiddleware<RequestType, ResponseType>(call: ServerSurfaceCall & {
+export function authMiddleware<RequestType, ResponseType>(call: ServerSurfaceCall & {
     request: RequestType;
 }, callback: sendUnaryData<ResponseType>, next: Function) {
     console.log('Intercepting request:', call.request);
@@ -36,22 +36,3 @@ function isValidApiKey(apiKey: string): boolean {
     console.log('Client API key:', clientApiKey, 'API key:', apiKey);
     return bcrypt.compareSync(apiKey, clientApiKey);
   }
-  
-export function ServiceRequest(prototype: UntypedServiceImplementation) {
-    const interceptedService: UntypedServiceImplementation = Object.getOwnPropertyNames(prototype).reduce(
-      (acc: any, methodName) => {
-          console.log(prototype[methodName])
-        if (typeof prototype[methodName] === 'function') {
-          const methodFn = prototype[methodName];
-          acc[methodName] = (call: any, callback: any) => {
-              // @ts-ignore
-            authMiddleware(call, callback, () => methodFn.call(acc, call, callback));
-          };
-        }
-        return acc;
-      },
-      {}
-    );
-
-    return interceptedService;
-}

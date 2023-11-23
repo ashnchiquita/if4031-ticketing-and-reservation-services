@@ -16,10 +16,12 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^4.17.21",
+    "@types/google-protobuf": "^3.15.12",
     "drizzle-kit": "^0.20.1",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
@@ -33,6 +35,7 @@
     "express": "^4.18.2",
     "grpc_tools_node_protoc_ts": "^5.3.3",
     "grpc-tools": "^1.12.4",
+    "grpc-ts-middleware": "^1.0.11",
     "module-alias": "^2.2.3",
     "pg": "^8.11.3"
   },

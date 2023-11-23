@@ -2,17 +2,34 @@ import { SeatStatus } from "@/proto/com/ticket_app/v1/seats_pb";
 import { Status } from "@grpc/grpc-js/build/src/constants";
 import bcrypt from 'bcrypt';
 
-export function mapSeatStatus(status: 'available' | 'booked' | 'sold'): SeatStatus {
-    switch (status) {
-        case 'available':
-            return SeatStatus.AVAILABLE;
-        case 'booked':
-            return SeatStatus.BOOKED;
-        case 'sold':
-            return SeatStatus.SOLD;
-        default:
-            throw new Error(`Invalid seat status: ${status}`);
+export function mapStringToSeatStatus(status: 'available' | 'booked' | 'sold'): SeatStatus {
+   const statusMap = {
+            available: SeatStatus.AVAILABLE,
+            booked: SeatStatus.BOOKED,
+            sold: SeatStatus.SOLD,
     }
+    
+    const seatStatus = statusMap[status] as SeatStatus;
+    if (!seatStatus) {
+        throw new Error(`Invalid seat status: ${status}`);
+    }
+
+    return seatStatus;
+}
+
+export function mapSeatStatusToString(status: SeatStatus): 'available' | 'booked' | 'sold' {
+   const statusMap = {
+         [SeatStatus.AVAILABLE]: 'available',
+         [SeatStatus.BOOKED]: 'booked',
+         [SeatStatus.SOLD]: 'sold',
+   }
+
+    const stringStatus =  statusMap[status] as 'available' | 'booked' | 'sold';
+    if (!stringStatus) {
+        throw new Error(`Invalid seat status: ${status}`);
+    }
+
+    return stringStatus;
 }
 
 export async function authenticate(call: any, onError: (data: {
