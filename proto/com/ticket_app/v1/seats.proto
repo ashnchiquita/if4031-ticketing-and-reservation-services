@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package com.ticket_app.v1;
 
+import "google/protobuf/empty.proto";
+
 enum SeatStatus {
     AVAILABLE = 0;
     BOOKED = 1;
@@ -21,23 +23,21 @@ message SeatRequest {
 
 message SeatResponse {
     string id = 1;
-    string number = 2;
+    int32 number = 2;
     SeatStatus status = 3;
-}
-
-message SeatsRequest {
-    string event_id = 1;
+    string event_id = 4;
 }
 
 message CreateSeatRequest {
-    string number = 1;
+    int32 number = 1;
     string event_id = 3;
 }
 
 message UpdateSeatRequest {
     string id = 1;
-    string number = 2;
+    int32 number = 2;
     SeatStatus status = 3;
+    string event_id = 4;
 }
 
 message DeleteSeatRequest {
@@ -46,7 +46,7 @@ message DeleteSeatRequest {
 
 service Seats {
     rpc GetSeat(SeatRequest) returns (SeatResponse);
-    rpc GetSeats(SeatsRequest) returns (stream SeatResponse);
+    rpc GetSeats(google.protobuf.Empty) returns (stream SeatResponse);
     rpc CreateSeat(CreateSeatRequest) returns (SeatResponse);
     rpc UpdateSeat(UpdateSeatRequest) returns (SeatResponse);
     rpc DeleteSeat(DeleteSeatRequest) returns (SeatResponse);
