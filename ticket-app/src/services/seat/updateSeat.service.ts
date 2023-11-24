@@ -5,7 +5,7 @@ import { DrizzleError, eq } from "drizzle-orm";
 export interface UpdateSeatRequest { 
     id: string;
     number: number;
-    status: "available" | "booked" | "sold";
+    status: "open" | "ongoing" | "booked";
     eventId: string;
 }
 

@@ -15,9 +15,9 @@ const getSeatsRequestSchema = z.object({
         eventId: z.string().optional(),
         status: z.string().optional()
         .refine((val) => {
-            return !val || ["available", "booked", "sold"].includes(val)
+            return !val || ["open", "ongoing", "booked"].includes(val)
         }, {
-            message: 'status must be "available", "booked", or "sold"'
+            message: 'status must be "open", "ongoing", or "booked"'
         }),
         // lastCursor: z.string().uuid({
         //     message: 'Invalid cursor ID.'
@@ -54,7 +54,7 @@ const createSeatRequestSchema = z.object({
 
 const updateSeatStatusRequestSchema = z.object({
     body: z.object({
-        status: z.enum(["available", "booked", "sold"], {
+        status: z.enum(["open", "ongoing", "booked"], {
             invalid_type_error: 'Invalid seat status.',
             required_error: "Seat status is required."
         }),
@@ -73,7 +73,7 @@ const updateSeatRequestSchema = z.object({
         number: z.number({
             required_error: "Seat number is required."
         }).int().positive(),
-        status: z.enum(["available", "booked", "sold"], {
+        status: z.enum(["open", "ongoing", "booked"], {
             invalid_type_error: 'Invalid seat status.',
             required_error: "Seat status is required."
         }),

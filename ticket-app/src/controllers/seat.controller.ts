@@ -23,7 +23,7 @@ const getSeatsController = async (req: Request, res: Response) => {
         page: page as string,
         pageSize: pageSize as string,
         eventId: eventId as string,
-        status: status as "available" | "booked" | "sold"
+        status: status as "open" | "ongoing" | "booked"
     });
 
     return new JsonResponse(res).success().withData(seatList).make();
@@ -46,7 +46,7 @@ const updateSeatController = async (req: Request, res: Response) => {
 
     const seat = await updateSeatService({
        id: id as string,
-       status: status as "available" | "booked" | "sold",
+       status: status as "open" | "ongoing" | "booked",
        number: number,
        eventId: event_id,
     });
@@ -64,7 +64,7 @@ const updateSeatStatusController = async (req: Request, res: Response) => {
 
     const seat = await updateSeatStatusService({
         id: id as string,
-        status: status as "available" | "booked" | "sold",
+        status: status as "open" | "ongoing" | "booked",
     });
 
     if (!seat) {

@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 
 export interface UpdateSeatStatusRequest { 
     id: string;
-    status: "available" | "booked" | "sold";
+    status: "open" | "ongoing" | "booked";
 }
 
 const updateSeatStatusService = async (req: UpdateSeatStatusRequest) => {

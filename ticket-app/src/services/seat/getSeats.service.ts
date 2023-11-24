@@ -5,12 +5,12 @@ import { PgSelect } from "drizzle-orm/pg-core";
 
 export interface GetSeatsRequest {
     eventId?: string;
-    status?: "available" | "booked" | "sold";
+    status?: "open" | "ongoing" | "booked";
     page?: string;
     pageSize?: string;
 }
 
-function withFilter<T extends PgSelect>(qb: T, status?: "available" | "booked" | "sold", eventId?: string) {
+function withFilter<T extends PgSelect>(qb: T, status?: "open" | "ongoing" | "booked", eventId?: string) {
     if (status && eventId) {
         return qb.where(and(eq(seats.status, status), eq(seats.event_id, eventId)))
     }

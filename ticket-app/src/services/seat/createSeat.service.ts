@@ -16,7 +16,7 @@ const createSeatService = async (req: createSeatRequestSchema) => {
         const res = await db.insert(seats).values({
             event_id: eventId,
             number: number,
-            status: "available"
+            status: "open"
         }).returning({
             id: seats.id,
             number: seats.number,

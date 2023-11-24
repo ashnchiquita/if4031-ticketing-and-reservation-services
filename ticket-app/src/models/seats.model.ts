@@ -2,7 +2,7 @@ import { integer, pgEnum, pgTable, timestamp, unique, uuid } from "drizzle-orm/p
 import { events } from "./events.model";
 import { relations } from "drizzle-orm";
 
-export const seatStatusEnum = pgEnum('seat_status', ['available', 'booked', 'sold']);
+export const seatStatusEnum = pgEnum('seat_status', ['open', 'ongoing', 'booked']);
 
 export const seats = pgTable(   'seats', {
     id: uuid('uuid').defaultRandom().unique().primaryKey(),
