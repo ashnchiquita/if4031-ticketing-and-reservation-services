@@ -21,7 +21,10 @@ func main() {
 
 	r.Use(middleware.Logger)
 
-	r.Get("/", controllers.DummyController)
+	r.Post("/user", controllers.CreateUser)
+	r.Get("/user/{userId}", controllers.GetUserById)
+	r.Put("/user", controllers.UpdateUser)
+	r.Delete("/user/{userId}", controllers.DeleteUser)
 
 	http.ListenAndServe(":3333", r)
 }
