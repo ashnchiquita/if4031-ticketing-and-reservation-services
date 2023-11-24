@@ -1,6 +1,9 @@
 import { SeatStatus } from "@/proto/com/ticket_app/v1/seats_pb";
-import { Status } from "@grpc/grpc-js/build/src/constants";
-import bcrypt from 'bcrypt';
+import tryCatchWrapper from "./tryCatchWrapper"
+import validate from "./validate"
+import JsonResponse from "./JsonResponse"
+import errorHandlerChain from './ErrorHandler';
+import HttpError from "./HttpError";
 
 export function mapStringToSeatStatus(status: 'available' | 'booked' | 'sold'): SeatStatus {
    const statusMap = {
@@ -32,33 +35,10 @@ export function mapSeatStatusToString(status: SeatStatus): 'available' | 'booked
     return stringStatus;
 }
 
-export async function authenticate(call: any, onError: (data: {
-    code: Status.UNAUTHENTICATED,
-     details: 'Invalid API key',
-}) => void) {
-    console.log('Intercepting request:', call.request);
-    console.log('Intercepting metadata:', call.metadata);
-
-    const apiKey: string = call.metadata.get('api-key')[0] as string;
-    const clientApiKey = process.env.CLIENT_API_KEY ?? "";
-    console.log('Client API key:', clientApiKey, 'API key:', apiKey);
-    const match = await bcrypt.compare(apiKey ?? "", clientApiKey);
-
-    if (apiKey && match) {
-      console.log('Valid API key');
-        return true;
-    } else {
-      console.log('Invalid API key');
-        onError({
-            code: Status.UNAUTHENTICATED,
-        details: 'Invalid API key',
-        });
-        return;
-    }
+export {
+    tryCatchWrapper,
+    validate,
+    JsonResponse,
+    errorHandlerChain,
+    HttpError
 }
-
-function isValidApiKey(apiKey: string): boolean {
-    const clientApiKey = process.env.CLIENT_API_KEY ?? "";
-    console.log('Client API key:', clientApiKey, 'API key:', apiKey);
-    return bcrypt.compareSync(apiKey, clientApiKey);
-  }

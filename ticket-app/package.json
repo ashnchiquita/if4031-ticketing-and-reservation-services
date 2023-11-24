@@ -30,6 +30,7 @@
     "@grpc/grpc-js": "^1.9.9",
     "@types/pg": "^8.10.9",
     "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
     "dotenv": "^16.3.1",
     "drizzle-orm": "^0.29.0",
     "express": "^4.18.2",
@@ -37,7 +38,8 @@
     "grpc-tools": "^1.12.4",
     "grpc-ts-middleware": "^1.0.11",
     "module-alias": "^2.2.3",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "zod": "^3.22.4"
   },
   "_moduleAliases": {
     "@": "./dist",

@@ -1,13 +1,10 @@
 import { Router } from 'express'
+import eventRouter from './api/event'
+import { authenticateAPIKey } from '@/middleware'
+import seatRouter from './api/seat'
 
 const router = Router()
-router.post('/payment/callback')
+router.use('/event', authenticateAPIKey, eventRouter)
+router.use('/seat', authenticateAPIKey, seatRouter)
 
-const baseRouter = Router()
-baseRouter.use('/v1', (req, res) => {
-    console.log('Webhook received:', req.body);
-    res.status(200).send('Callback received successfully');
-})
-
-
-export default baseRouter
+export default router
