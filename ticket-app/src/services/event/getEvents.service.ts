@@ -1,18 +1,20 @@
 import db from "@/database/drizzle";
 import { events } from "@/models";
-import { and, gt, ilike } from "drizzle-orm";
+import { ilike } from "drizzle-orm";
 
 export interface GetEventsRequest  {
     title: string;
     pageSize?: string;
+    page?: string;
 }
 
 const getEventsService = async (req: GetEventsRequest) => {
     const title = req.title ? req.title : '';
-    const pageSize = req.pageSize ? parseInt(req.pageSize) : 25;
+    const pageSize = req.pageSize ? Math.max(parseInt(req.pageSize), 0) : 25;
+    const page = req.page ? Math.max(parseInt(req.page), 1) : 1;
 
     console.log(`getEvents: title=${title}, pageSize=${pageSize}`)
-    const eventList = await db.select({
+    const eventList = db.select({
         title: events.title,
         id: events.id,
         created_at: events.created_at,
@@ -20,6 +22,7 @@ const getEventsService = async (req: GetEventsRequest) => {
     }).from(events)
         .orderBy(events.created_at)
         .limit(pageSize)
+        .offset(pageSize * (page - 1))
         .where(ilike(events.title, `%${title}%`))
 
     return eventList;

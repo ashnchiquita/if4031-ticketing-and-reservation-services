@@ -2,7 +2,9 @@ import { z } from "zod";
 
 const getSeatByIdRequestSchema = z.object({
     params: z.object({
-        id: z.string().uuid({
+        id: z.string({
+            required_error: "Seat ID is required."
+        }).uuid({
             message: 'Invalid seat ID.'
         })
     })
@@ -10,15 +12,22 @@ const getSeatByIdRequestSchema = z.object({
 
 const getSeatsRequestSchema = z.object({
     query: z.object({
-        eventId: z.string().uuid({
-            message: 'Invalid event ID.'
-        }).optional(),
-        status: z.enum(["available", "booked", "sold"], {
-            invalid_type_error: 'Invalid seat status.'
-        }).optional(),
+        eventId: z.string().optional(),
+        status: z.string().optional()
+        .refine((val) => {
+            return !val || ["available", "booked", "sold"].includes(val)
+        }, {
+            message: 'status must be "available", "booked", or "sold"'
+        }),
         // lastCursor: z.string().uuid({
         //     message: 'Invalid cursor ID.'
         // }).optional(),
+        page: z.string().optional()
+        .refine((val) => {
+            return !val || parseInt(val) > 0
+        }, {
+            message: 'page must be a positive integer'
+        }),
         pageSize: z.string().optional()
         .refine((val) => {
             return !val || parseInt(val) > 0
@@ -30,10 +39,14 @@ const getSeatsRequestSchema = z.object({
 
 const createSeatRequestSchema = z.object({
     body: z.object({
-        eventId: z.string().uuid({
+        eventId: z.string({
+            required_error: "Event ID is required."
+        }).uuid({
             message: 'Invalid event ID.'
         }),
-        number: z.number().int().positive(),
+        number: z.number({
+            required_error: "Seat number is required."
+        }).int().positive(),
     }, {
         required_error: "Body is required."
     })
@@ -42,11 +55,14 @@ const createSeatRequestSchema = z.object({
 const updateSeatStatusRequestSchema = z.object({
     body: z.object({
         status: z.enum(["available", "booked", "sold"], {
-            invalid_type_error: 'Invalid seat status.'
+            invalid_type_error: 'Invalid seat status.',
+            required_error: "Seat status is required."
         }),
     }),
     params: z.object({
-        id: z.string().uuid({
+        id: z.string({
+            required_error: "Seat ID is required."
+        }).uuid({
             message: 'Invalid seat ID.'
         }),
     })
@@ -54,11 +70,16 @@ const updateSeatStatusRequestSchema = z.object({
 
 const updateSeatRequestSchema = z.object({
     body: z.object({
-        number: z.number().int().positive(),
+        number: z.number({
+            required_error: "Seat number is required."
+        }).int().positive(),
         status: z.enum(["available", "booked", "sold"], {
-            invalid_type_error: 'Invalid seat status.'
+            invalid_type_error: 'Invalid seat status.',
+            required_error: "Seat status is required."
         }),
-        eventId: z.string().uuid({
+        eventId: z.string({
+            required_error: "Event ID is required."
+        }).uuid({
             message: 'Invalid event ID.'
         })
     }),
@@ -72,7 +93,9 @@ const updateSeatRequestSchema = z.object({
 
 const deleteSeatRequestSchema = z.object({
     params: z.object({
-        id: z.string().uuid({
+        id: z.string({
+            required_error: "Seat ID is required."
+        }).uuid({
             message: 'Invalid seat ID.'
         }),
     })

@@ -2,6 +2,7 @@ import { Response } from "express";
 import JsonResponse from "./JsonResponse";
 import HttpError, { HttpStatusCode } from "./HttpError";
 import { ZodError } from "zod";
+import { DrizzleError } from "drizzle-orm";
 
 abstract class ErrorHandler {
     protected nextHandler?: ErrorHandler;
@@ -55,5 +56,18 @@ class ZodErrorHandler extends ErrorHandler {
     }
 }
 
+class DrizzleErrorHandler extends ErrorHandler {
+    protected canHandle(error: unknown): boolean {
+        return error instanceof DrizzleError;
+    }
+
+    protected getResponse(jsonResponse: JsonResponse, error: DrizzleError): Response {
+        return jsonResponse.error(HttpStatusCode.BadRequest)
+                .withMessage(error.message)
+                .make();
+    }
+}
+
 export default (new HttpErrorHandler())
-                .setNextHandler((new ZodErrorHandler()))
+                .setNextHandler((new ZodErrorHandler())
+                .setNextHandler(new DrizzleErrorHandler()))

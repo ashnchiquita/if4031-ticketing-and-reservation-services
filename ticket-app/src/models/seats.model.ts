@@ -1,4 +1,4 @@
-import { integer, pgEnum, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
+import { integer, pgEnum, pgTable, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 import { events } from "./events.model";
 import { relations } from "drizzle-orm";
 
@@ -13,7 +13,9 @@ export const seats = pgTable(   'seats', {
     status: seatStatusEnum('status').notNull(),
     created_at: timestamp('created_at').defaultNow().notNull(),
     updated_at: timestamp('updated_at').defaultNow().notNull(),
-})
+}, (t) => ({
+    unq: unique().on(t.event_id, t.number),
+}));
 
 export const seatsRelations = relations(seats, ({ one }) => ({
 	event: one(events, {

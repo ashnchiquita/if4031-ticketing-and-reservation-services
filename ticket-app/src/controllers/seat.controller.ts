@@ -17,9 +17,10 @@ const getSeatByIdController = async (req: Request, res: Response) => {
 }
 
 const getSeatsController = async (req: Request, res: Response) => {
-    const { lastCursor, pageSize, eventId, status } = req.query;
+    const { page, pageSize, eventId, status } = req.query;
     
     const seatList = await getSeatsService({
+        page: page as string,
         pageSize: pageSize as string,
         eventId: eventId as string,
         status: status as "available" | "booked" | "sold"
@@ -47,7 +48,7 @@ const updateSeatController = async (req: Request, res: Response) => {
        id: id as string,
        status: status as "available" | "booked" | "sold",
        number: number,
-       event_id: event_id,
+       eventId: event_id,
     });
 
     if (!seat) {

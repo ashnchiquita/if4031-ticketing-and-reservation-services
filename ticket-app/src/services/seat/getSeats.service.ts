@@ -6,6 +6,7 @@ import { PgSelect } from "drizzle-orm/pg-core";
 export interface GetSeatsRequest {
     eventId?: string;
     status?: "available" | "booked" | "sold";
+    page?: string;
     pageSize?: string;
 }
 
@@ -30,9 +31,12 @@ const getSeatsService = async (req: GetSeatsRequest) => {
     const pageSize = req.pageSize ? parseInt(req.pageSize) : 25;
     const eventId = req.eventId
     const status = req.status
+    const page = req.page ? Math.max(parseInt(req.page), 1) : 1;
+
     let seatList = db.select().from(seats)
                 .orderBy(seats.created_at)
                 .limit(pageSize)
+                .offset(pageSize * (page - 1))
                 .$dynamic();
                 
     if (eventId || status) {

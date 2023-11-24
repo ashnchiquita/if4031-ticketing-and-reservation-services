@@ -3,10 +3,11 @@ import {  JsonResponse } from "@/utils";
 import { Request, Response } from "express";
 
 const getEventsController = async (req: Request, res: Response) => {
-    const { title, pageSize } = req.query;
+    const { title, pageSize, page } = req.query;
 
     const eventList = await getEventsService({
         title: title as string,
+        page: page as string,
         pageSize: pageSize as string
     });
 
