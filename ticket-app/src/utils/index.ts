@@ -1,6 +1,5 @@
 import { SeatStatus } from "@/proto/com/ticket_app/v1/seats_pb";
 import tryCatchWrapper from "./tryCatchWrapper"
-import validate from "./validate"
 import JsonResponse from "./JsonResponse"
 import errorHandlerChain from './ErrorHandler';
 import HttpError from "./HttpError";
@@ -37,7 +36,6 @@ export function mapSeatStatusToString(status: SeatStatus): 'available' | 'booked
 
 export {
     tryCatchWrapper,
-    validate,
     JsonResponse,
     errorHandlerChain,
     HttpError
