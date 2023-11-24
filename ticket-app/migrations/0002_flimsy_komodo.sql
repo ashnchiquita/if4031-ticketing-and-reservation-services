@@ -1,0 +1,1 @@
+ALTER TABLE "seats" ADD CONSTRAINT "seats_number_unique" UNIQUE("number");
