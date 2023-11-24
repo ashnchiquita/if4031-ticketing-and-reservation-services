@@ -2,20 +2,15 @@ package controllers
 
 import (
 	"encoding/json"
-	"errors"
 	"log"
 	"net/http"
 
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/database"
+	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/lib"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/models"
 	"github.com/go-chi/chi/v5"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
-
-type ResponseMessage struct {
-	Message string `json:"message"`
-}
 
 type CreateUserRequest struct {
 	Username string `json:"username"`
@@ -30,7 +25,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	// Check for invalid request body
 	if userReq.Email == "" || userReq.Password == "" || userReq.Username == "" {
-		msg := ResponseMessage{
+		msg := lib.ResponseMessage{
 			Message: "invalid request",
 		}
 
@@ -45,7 +40,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(userReq.Password), 14)
 	if err != nil {
 		log.Println(err.Error())
-		msg := ResponseMessage{
+		msg := lib.ResponseMessage{
 			Message: err.Error(),
 		}
 
@@ -64,7 +59,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		Email:        userReq.Email,
 	})
 
-	msg := ResponseMessage{
+	msg := lib.ResponseMessage{
 		Message: "success",
 	}
 
@@ -74,7 +69,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 type UpdateUserRequest struct {
-	ID       uint   `json:"id"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
@@ -90,26 +84,13 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	json.NewDecoder(r.Body).Decode(&userReq)
 
-	// Check for invalid request body
-	if userReq.ID == 0 {
-		msg := ResponseMessage{
-			Message: "invalid request",
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(msg)
-
-		return
-	}
-
 	// Find the user in the database
 	db := database.GetInstance()
-	result := db.First(&user, userReq.ID)
+	result := db.First(&user, "id = ?", chi.URLParam(r, "userId"))
 
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	if result.Error != nil {
 		log.Println(result.Error.Error())
-		msg := ResponseMessage{
+		msg := lib.ResponseMessage{
 			Message: "invalid user id",
 		}
 
@@ -128,7 +109,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		passwordHash, err = bcrypt.GenerateFromPassword([]byte(userReq.Password), 14)
 		if err != nil {
 			log.Println(err.Error())
-			msg := ResponseMessage{
+			msg := lib.ResponseMessage{
 				Message: err.Error(),
 			}
 
@@ -147,7 +128,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		Email:        userReq.Email,
 	})
 
-	msg := ResponseMessage{
+	msg := lib.ResponseMessage{
 		Message: "success",
 	}
 
@@ -157,7 +138,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 type GetUserByIdResponse struct {
-	ResponseMessage
+	lib.ResponseMessage
 	Data models.User
 }
 
@@ -167,10 +148,10 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 	// Find the user in the database
 	db := database.GetInstance()
 
-	result := db.First(&user, chi.URLParam(r, "userId"))
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	result := db.First(&user, "id = ?", chi.URLParam(r, "userId"))
+	if result.Error != nil {
 		log.Println(result.Error.Error())
-		msg := ResponseMessage{
+		msg := lib.ResponseMessage{
 			Message: "invalid user id",
 		}
 
@@ -182,7 +163,7 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	msg := GetUserByIdResponse{
-		ResponseMessage: ResponseMessage{
+		ResponseMessage: lib.ResponseMessage{
 			Message: "success",
 		},
 		Data: user,
@@ -195,11 +176,11 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	db := database.GetInstance()
-	db.Delete(&models.User{}, chi.URLParam(r, "userId"))
+	db.Delete(&models.User{}, "id = ?", chi.URLParam(r, "userId"))
 
 	log.Println(chi.URLParam(r, "userId"))
 
-	msg := ResponseMessage{
+	msg := lib.ResponseMessage{
 		Message: "success",
 	}
 

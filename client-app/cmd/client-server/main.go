@@ -23,7 +23,7 @@ func main() {
 
 	r.Post("/user", controllers.CreateUser)
 	r.Get("/user/{userId}", controllers.GetUserById)
-	r.Put("/user", controllers.UpdateUser)
+	r.Put("/user/{userId}", controllers.UpdateUser)
 	r.Delete("/user/{userId}", controllers.DeleteUser)
 
 	http.ListenAndServe(":3333", r)
