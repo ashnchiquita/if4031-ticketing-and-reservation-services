@@ -26,5 +26,8 @@ func main() {
 	r.Put("/user/{userId}", controllers.UpdateUser)
 	r.Delete("/user/{userId}", controllers.DeleteUser)
 
+	r.Post("/booking", controllers.CreateBooking)
+	r.Post("/booking/payment", controllers.CreatePayment)
+
 	http.ListenAndServe(":3333", r)
 }

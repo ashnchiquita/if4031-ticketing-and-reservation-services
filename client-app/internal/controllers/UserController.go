@@ -101,9 +101,6 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println(&user)
-	log.Println(userReq)
-
 	// Hash the newly updated password
 	if userReq.Password != "" {
 		passwordHash, err = bcrypt.GenerateFromPassword([]byte(userReq.Password), 14)
