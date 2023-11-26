@@ -7,8 +7,11 @@
     "dev": "export NODE_ENV=dev && rm -rf ./dist && nodemon",
     "protobuf:build": "sh build.sh",
     "build": "echo \"Building project\" && rm -rf ./dist && export NODE_ENV=production && npx tsc",
-    "serve": "export NODE_ENV=production GRPC_VERBOSITY=DEBUG GRPC_TRACE=all && node ./dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "serve": "export NODE_ENV=production && node ./dist/src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "drizzle:generate": "drizzle-kit generate:pg",
+		"drizzle:push": "drizzle-kit push:pg",
+		"drizzle:seed": "node --loader esbuild-register/loader -r esbuild-register ./dist/src/seed/index.js"
   },
   "keywords": [],
   "author": "",
@@ -43,7 +46,8 @@
     "zod": "^3.22.4"
   },
   "_moduleAliases": {
-    "@": "./dist",
+    "@": "./dist/src",
+    "@/config": "./dist/config",
     "@/proto": "./proto"
   }
 }

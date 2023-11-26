@@ -1,6 +1,6 @@
 import type { Config } from 'drizzle-kit';
 import * as dotenv from 'dotenv'
-import env from './config/env';
+import env from './config/env'
 
 dotenv.config()
 

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpError, errorHandlerChain } from "../utils";
 import bcrypt from 'bcrypt';
-import env from "config/env";
+import env from "@/config/env";
 
 const authenticateAPIKey = (extApiKey: string) => async  (req: Request, res: Response, next: NextFunction) => {
   try {

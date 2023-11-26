@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import crypto from "crypto"
-import env from "config/env"
+import env from "@/config/env"
 
 function validateSignature(req: Request, res: Response, next: Function) {
     // Get the reader from the incoming webhook

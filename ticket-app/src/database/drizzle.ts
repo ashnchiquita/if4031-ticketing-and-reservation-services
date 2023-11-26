@@ -1,7 +1,7 @@
 import { Pool } from 'pg'
 import { drizzle } from 'drizzle-orm/node-postgres'
 import * as schema from "../models"
-import env from 'config/env'
+import env from '@/config/env'
 
 const pool = new Pool({
   host: env.DB_HOST,
