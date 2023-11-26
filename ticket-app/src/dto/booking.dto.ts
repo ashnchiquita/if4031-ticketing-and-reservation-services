@@ -12,16 +12,14 @@ const getBookingByIdRequestSchema = z.object({
 
 const getBookingsRequestSchema = z.object({
     query: z.object({
-        eventId: z.string().optional(),
+        userId: z.string().optional(),
+        seatId: z.string().optional(),
         status: z.string().optional()
         .refine((val) => {
             return !val || ["pending", "confirmed", "cancelled"].includes(val)
         }, {
             message: 'status must be "pending", "confirmed", or "cancelled"'
         }),
-        // lastCursor: z.string().uuid({
-        //     message: 'Invalid cursor ID.'
-        // }).optional(),
         page: z.string().optional()
         .refine((val) => {
             return !val || parseInt(val) > 0

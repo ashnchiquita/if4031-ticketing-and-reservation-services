@@ -2,6 +2,7 @@ import { sendUnaryData } from "@grpc/grpc-js";
 import { Status } from "@grpc/grpc-js/build/src/constants";
 import { ServerSurfaceCall } from "@grpc/grpc-js/build/src/server-call";
 import bcrypt from 'bcrypt';
+import env from "config/env";
 
 export function authMiddleware<RequestType, ResponseType>(call: ServerSurfaceCall & {
     request: RequestType;
@@ -32,7 +33,7 @@ export function authMiddleware<RequestType, ResponseType>(call: ServerSurfaceCal
 }
 
 function isValidApiKey(apiKey: string): boolean {
-    const clientApiKey = process.env.CLIENT_API_KEY ?? "";
+    const clientApiKey = env.CLIENT_API_KEY ?? "";
     console.log('Client API key:', clientApiKey, 'API key:', apiKey);
     return bcrypt.compareSync(apiKey, clientApiKey);
   }

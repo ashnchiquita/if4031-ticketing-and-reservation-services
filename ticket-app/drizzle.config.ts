@@ -1,5 +1,6 @@
 import type { Config } from 'drizzle-kit';
 import * as dotenv from 'dotenv'
+import env from './config/env';
 
 dotenv.config()
 
@@ -8,10 +9,10 @@ export default {
 	out: './migrations',
 	driver: 'pg',
 	dbCredentials: {
-        host: process.env.DB_HOST ?? 'localhost',
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        port: parseInt(process.env.DB_PORT!),
-        database: process.env.DB_NAME!,
+        host: env.DB_HOST ?? 'localhost',
+        user: env.DB_USER,
+        password: env.DB_PASSWORD,
+        port: parseInt(env.DB_PORT!),
+        database: env.DB_NAME!,
 	},
 } satisfies Config;

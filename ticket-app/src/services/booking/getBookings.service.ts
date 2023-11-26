@@ -6,30 +6,33 @@ import { PgSelect } from "drizzle-orm/pg-core";
 export interface GetBookingsRequest {
     status?: "pending" | "confirmed" | "cancelled";
     userId?: string;
+    seatId?: string;
     page?: string;
     pageSize?: string;
 }
 
-function withFilter<T extends PgSelect>(qb: T, status?: "pending" | "confirmed" | "cancelled", userId?: string) {
-    if (status && userId) {
-        return qb.where(and(eq(bookings.status, status), eq(bookings.user_id, userId)))
-    }
-
+function withFilter<T extends PgSelect>(qb: T, status?: "pending" | "confirmed" | "cancelled", userId?: string, seatId?: string) {
+    const condition = []
     if (status) {
-        return qb.where(eq(bookings.status, status))
+        condition.push(eq(bookings.status, status))
     }
 
     if (userId) {
-        return qb.where(eq(bookings.user_id, userId))
+        condition.push(eq(bookings.user_id, userId))
     }
 
-    return qb
+    if (seatId) {
+        condition.push(eq(bookings.seat_id, seatId))
+    }
+
+    return qb.where(and(...condition))
 }
 
 const getBookingsService = async (req: GetBookingsRequest) => {
     console.log(`getBookingsService: ${JSON.stringify(req)}`);
     const pageSize = req.pageSize ? parseInt(req.pageSize) : 25;
     const userId = req.userId
+    const seatId = req.seatId
     const status = req.status
     const page = req.page ? Math.max(parseInt(req.page), 1) : 1;
 
@@ -46,8 +49,8 @@ const getBookingsService = async (req: GetBookingsRequest) => {
                 .offset(pageSize * (page - 1))
                 .$dynamic();
                 
-    if (userId || status) {
-        seatList = withFilter(seatList, status, userId)
+    if (userId || status || seatId) {
+        seatList = withFilter(seatList, status, userId, seatId)
     } 
 
     return seatList

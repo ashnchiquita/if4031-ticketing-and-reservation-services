@@ -36,6 +36,20 @@
       "when": 1700835088957,
       "tag": "0004_cold_blazing_skull",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1700957413954,
+      "tag": "0005_young_big_bertha",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1700961416890,
+      "tag": "0006_chilly_ozymandias",
+      "breakpoints": true
     }
   ]
 }

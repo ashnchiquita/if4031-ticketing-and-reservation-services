@@ -1,6 +1,7 @@
 import { bookingStatusEnum, bookings } from "./bookings.model";
 import { events, eventsRelations } from "./events.model";
 import { seats, seatStatusEnum, seatsRelations } from "./seats.model";
+import { bookingQueue } from "./bookingQueue.model";
 
 export {
     events,
@@ -9,5 +10,6 @@ export {
     bookings,
     seatStatusEnum,
     bookingStatusEnum,
-    seatsRelations
+    seatsRelations,
+    bookingQueue
 }

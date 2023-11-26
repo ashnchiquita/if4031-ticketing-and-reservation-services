@@ -1,7 +1,9 @@
-import authenticateAPIKey from "./authenticateAPIKey";
+import {authenticateClientAPIKey, authenticatePaymentAPIKey} from "./authenticateAPIKey";
 import validatePayload from "./validatePayload";
-
+import validateSignature from "./validateSignature";
 export {
-    authenticateAPIKey,
-    validatePayload
+    authenticateClientAPIKey,
+    authenticatePaymentAPIKey,
+    validatePayload,
+    validateSignature
 }

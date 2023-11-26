@@ -17,13 +17,14 @@ const getBookingByIdController = async (req: Request, res: Response) => {
 }
 
 const getBookingsController = async (req: Request, res: Response) => {
-    const { page, pageSize, status, userId } = req.query;
+    const { page, pageSize, status, userId, seatId } = req.query;
     
     const bookingList = await getBookingsService({
         page: page as string,
         pageSize: pageSize as string,
         status: status as "pending" | "confirmed" | "cancelled",
         userId: userId as string,
+        seatId: seatId as string,
     });
 
     return new JsonResponse(res).success().withData(bookingList).make();
@@ -36,6 +37,10 @@ const createBookingController = async (req: Request, res: Response) => {
         seatId,
         userId,
     });
+
+    if (!booking) {
+        return new JsonResponse(res).success().withMessage(`You are in the queue for seat id ${seatId}`).make();
+    }
 
     return new JsonResponse(res).success().withData(booking).make();
 }

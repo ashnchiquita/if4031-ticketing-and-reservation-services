@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpError, errorHandlerChain } from "../utils";
 import bcrypt from 'bcrypt';
+import env from "config/env";
 
-const authenticateAPIKey = (req: Request, res: Response, next: NextFunction) => {
+const authenticateAPIKey = (extApiKey: string) => async  (req: Request, res: Response, next: NextFunction) => {
   try {
     console.log('Authenticating token');
     const apiKey = req.headers['api-key'] as string
@@ -11,8 +12,7 @@ const authenticateAPIKey = (req: Request, res: Response, next: NextFunction) => 
       throw new HttpError(401, 'No API key provided');
     }
 
-    const clientApiKey = process.env.CLIENT_API_KEY ?? "";
-    const isValid = bcrypt.compareSync(apiKey, clientApiKey);
+    const isValid = bcrypt.compareSync(apiKey, extApiKey);
     if (!isValid) {
       throw new HttpError(401, 'Invalid API key');
     }
@@ -24,4 +24,10 @@ const authenticateAPIKey = (req: Request, res: Response, next: NextFunction) => 
   }
 }
 
-export default authenticateAPIKey;
+const authenticateClientAPIKey = authenticateAPIKey(env.CLIENT_API_KEY);
+const authenticatePaymentAPIKey = authenticateAPIKey(env.PAYMENT_API_KEY);
+
+export {
+  authenticateClientAPIKey,
+  authenticatePaymentAPIKey
+};
