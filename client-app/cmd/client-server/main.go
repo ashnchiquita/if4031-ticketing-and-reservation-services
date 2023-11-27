@@ -34,7 +34,7 @@ func main() {
 	r.Post("/booking/payment", booking_controller.CreatePayment)
 
 	// RabbitMQ queues initialization
-	queues.InitPaymentQueue()
+	go queues.InitPaymentQueue()
 
 	// Starts go http server
 	http.ListenAndServe(":3333", r)
