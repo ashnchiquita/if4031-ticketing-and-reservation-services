@@ -15,12 +15,12 @@ services:
       - payment-network
 
   payment-db:
-    image: scylladb/scylla
+    image: cassandra:latest
     ports:
       - '9042:9042'
     hostname: payment-db
     volumes:
-      - ./scylla:/var/lib/scylla
+      - ./db:/var/lib/cassandra
     healthcheck:
       test: ['CMD-SHELL', '[ $$(nodetool statusgossip) = running ]']
       interval: 10s
