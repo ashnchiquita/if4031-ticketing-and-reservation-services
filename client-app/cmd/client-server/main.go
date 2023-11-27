@@ -10,6 +10,7 @@ import (
 
 	booking_controller "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/controllers/booking"
 	user_controller "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/controllers/user"
+	messagebroker "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/message-broker"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/queues"
 )
 
@@ -34,7 +35,11 @@ func main() {
 	r.Post("/booking/payment", booking_controller.CreatePayment)
 
 	// RabbitMQ queues initialization
+	messagebroker.GetInstance()
+	defer messagebroker.CloseInstance()
+
 	go queues.InitPaymentQueue()
+	go queues.InitBookingQueue()
 
 	// Starts go http server
 	http.ListenAndServe(":3333", r)
