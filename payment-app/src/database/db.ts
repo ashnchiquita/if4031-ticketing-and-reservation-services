@@ -1,13 +1,16 @@
 import { Client, types, mapping } from 'cassandra-driver';
 
-export class Scylla {
+export class DB {
   private static instance: Client | null = null;
   private static mapper: mapping.Mapper;
 
-  private static createInstance() {
-    Scylla.instance = new Client({ contactPoints: [process.env.SCYLLADB_HOST as string] });
+  private static async connect() {
+    DB.instance = new Client({
+      contactPoints: [process.env.DB_HOST as string],
+      localDataCenter: 'datacenter1',
+    });
 
-    Scylla.instance.connect().then(() => {
+    await DB.instance.connect().then(() => {
       const queries = [
         `CREATE KEYSPACE IF NOT EXISTS payment WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1' }`,
         'USE payment',
@@ -16,11 +19,13 @@ export class Scylla {
 
       let promise: Promise<void | types.ResultSet | null> = Promise.resolve();
 
-      queries.forEach((query) => (promise = promise.then(() => Scylla.instance && Scylla.instance.execute(query))));
+      queries.forEach((query) => {
+        promise = promise.then(() => DB.instance && DB.instance.execute(query));
+      });
       return promise;
     });
 
-    Scylla.instance.keyspace = 'payment';
+    DB.instance.keyspace = 'payment';
 
     const mappingOptions = {
       models: {
@@ -36,14 +41,14 @@ export class Scylla {
       },
     };
 
-    Scylla.mapper = new mapping.Mapper(Scylla.instance, mappingOptions);
+    DB.mapper = new mapping.Mapper(DB.instance, mappingOptions);
   }
 
-  public static getPaymentMapper() {
-    if (!Scylla.mapper) {
-      Scylla.createInstance();
+  public static async getInvoicesMapper() {
+    if (!DB.mapper) {
+      await DB.connect();
     }
 
-    return Scylla.mapper.forModel('Payment');
+    return DB.mapper.forModel('Invoices');
   }
 }
