@@ -2,7 +2,7 @@
   "name": "ticket-app",
   "version": "1.0.0",
   "description": "## API Docs",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "dev": "export NODE_ENV=dev && rm -rf ./dist && nodemon",
     "protobuf:build": "sh build.sh",
@@ -47,7 +47,6 @@
   },
   "_moduleAliases": {
     "@": "./dist/src",
-    "@/config": "./dist/config",
-    "@/proto": "./proto"
+    "@/config": "./dist/config"
   }
 }

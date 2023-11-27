@@ -24,19 +24,26 @@ services:
       POSTGRES_USER: ${DB_USER_TICKET}
       POSTGRES_PASSWORD: ${DB_PASSWORD_TICKET}
       POSTGRES_DB: ${DB_NAME_TICKET}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s  
     networks:
       - app-network
-  # ticket_app:
-  #   build: ../ticket-app
-  #   restart: always
-  #   volumes:
-  #     - ../ticket-app/src:/usr/src/app/src
-  #   ports:
-  #     - "8002:8002"
-  #   depends_on:
-  #     - ticket_app_db
-  #   networks:
-  #     - app-network
+  ticket_app:
+    build: ../ticket-app
+    restart: always
+    volumes:
+      - ../ticket-app/src:/usr/src/app/src
+    ports:
+      - "8002:8002"
+    depends_on:
+      ticket_app_db:
+        condition: service_healthy
+    networks:
+      - app-network
 networks:
   app-network:
     driver: bridge
