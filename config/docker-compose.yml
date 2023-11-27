@@ -1,25 +1,32 @@
-version: '3.0'
+version: "3.8"
 services:
-  # rabbitmq:
-  #   image: rabbitmq:3-management-alpine
-  #   ports:
-  #     # AMQP protocol port
-  #     - "5672:5672"
-  #     # HTTP management UI
-  #     - "15672:15672"
-  #   volumes:
-  #       - ./rabbitmq/queue/data/:/var/lib/rabbitmq/
-  #       - ./rabbitmq/queue/log/:/var/log/rabbitmq
-  #   networks:
-  #     - app-network
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    hostname: tubes-message-broker
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_DEFAULT_USER: ${MESSAGE_BROKER_USER}
+      RABBITMQ_DEFAULT_PASS: ${MESSAGE_BROKER_PASSWORD}
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    volumes:
+      - ./rabbitmq/queue/data/:/var/lib/rabbitmq/
+      - ./rabbitmq/queue/log/:/var/log/rabbitmq
+    networks:
+      - app-network
   ticket_app_db:
     image: postgres:latest
+    hostname: tubes-ticket-app-db
     restart: always
+    env_file:
+      - .env
     volumes:
       - "../ticket-app/db:/var/lib/postgresql/data"
       - "../ticket-app/migrations:/docker-entrypoint-initdb.d/"
     ports:
-      - "5433:5432"
+      - "5435:5432"
     environment:
       POSTGRES_USER: ${DB_USER_TICKET}
       POSTGRES_PASSWORD: ${DB_PASSWORD_TICKET}
@@ -42,6 +49,18 @@ services:
     depends_on:
       ticket_app_db:
         condition: service_healthy
+    networks:
+      - app-network
+  client_app:
+    extends:
+      file: ../client-app/docker-compose.yaml
+      service: client_app
+    networks:
+      - app-network
+  client_app_db:
+    extends:
+      file: ../client-app/docker-compose.yaml
+      service: client_app_db
     networks:
       - app-network
 networks:
