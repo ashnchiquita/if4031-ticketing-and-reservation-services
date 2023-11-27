@@ -1,4 +1,4 @@
-import db from "@/database/drizzle";
+import { DrizzlePool } from "@/common/types";
 import { bookingQueue } from "@/models/bookingQueue.model";
 import { DrizzleError } from "drizzle-orm";
 
@@ -7,7 +7,7 @@ export interface CreateBookingQueueRequest {
     userId: string;
 }
 
-const createBookingQueueService = async (req: CreateBookingQueueRequest) => {
+const createBookingQueueService = async (db: DrizzlePool, req: CreateBookingQueueRequest) => {
     console.log(`createBookingQueueService: ${JSON.stringify(req)}`)
     
     const { seatId, userId } = req;

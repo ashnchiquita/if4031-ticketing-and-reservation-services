@@ -1,4 +1,4 @@
-import db from "@/database/drizzle";
+import { DrizzlePool } from "@/common/types";
 import { events } from "@/models";
 import { ilike } from "drizzle-orm";
 
@@ -8,7 +8,7 @@ export interface GetEventsRequest  {
     page?: string;
 }
 
-const getEventsService = async (req: GetEventsRequest) => {
+const getEventsService = async (db: DrizzlePool ,req: GetEventsRequest) => {
     const title = req.title ? req.title : '';
     const pageSize = req.pageSize ? Math.max(parseInt(req.pageSize), 0) : 25;
     const page = req.page ? Math.max(parseInt(req.page), 1) : 1;

@@ -1,3 +1,4 @@
+import db from "@/database/drizzle";
 import { createEventService, deleteEventService, getEventByIdService, getEventsService, updateEventService } from "@/services/event";
 import {  JsonResponse } from "@/utils";
 import { Request, Response } from "express";
@@ -5,7 +6,7 @@ import { Request, Response } from "express";
 const getEventsController = async (req: Request, res: Response) => {
     const { title, pageSize, page } = req.query;
 
-    const eventList = await getEventsService({
+    const eventList = await getEventsService(db, {
         title: title as string,
         page: page as string,
         pageSize: pageSize as string
@@ -17,7 +18,7 @@ const getEventsController = async (req: Request, res: Response) => {
 const getEventByIdController = async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    const event = await getEventByIdService({
+    const event = await getEventByIdService(db, {
         id
     });
 
@@ -31,7 +32,7 @@ const getEventByIdController = async (req: Request, res: Response) => {
 const createEventController = async (req: Request, res: Response) => {
     const { title } = req.body;
 
-    const event = await createEventService({
+    const event = await createEventService(db, {
         title
     });
 
@@ -42,7 +43,7 @@ const updateEventController = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { title } = req.body;
 
-    const event = await updateEventService({
+    const event = await updateEventService(db, {
         id,
         title
     });
@@ -58,7 +59,7 @@ const updateEventController = async (req: Request, res: Response) => {
 const deleteEventController = async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    const event = await deleteEventService({
+    const event = await deleteEventService(db, {
         id
     });
 

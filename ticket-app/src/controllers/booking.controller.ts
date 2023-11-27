@@ -1,3 +1,4 @@
+import db from "@/database/drizzle";
 import { createBookingService, deleteBookingService, getBookingByIdService, getBookingsService, updateBookingStatusService } from "@/services/booking";
 import { JsonResponse } from "@/utils";
 import { Request, Response } from "express";
@@ -5,7 +6,7 @@ import { Request, Response } from "express";
 const getBookingByIdController = async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    const booking = await getBookingByIdService({
+    const booking = await getBookingByIdService(db, {
         id
     });
 
@@ -19,7 +20,7 @@ const getBookingByIdController = async (req: Request, res: Response) => {
 const getBookingsController = async (req: Request, res: Response) => {
     const { page, pageSize, status, userId, seatId } = req.query;
     
-    const bookingList = await getBookingsService({
+    const bookingList = await getBookingsService(db, {
         page: page as string,
         pageSize: pageSize as string,
         status: status as "pending" | "confirmed" | "cancelled",
@@ -33,7 +34,7 @@ const getBookingsController = async (req: Request, res: Response) => {
 const createBookingController = async (req: Request, res: Response) => {
     const { seatId, userId } = req.body;
 
-    const booking = await createBookingService({
+    const booking = await createBookingService(db, {
         seatId,
         userId,
     });
@@ -49,7 +50,7 @@ const updateBookingStatusController = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const booking = await updateBookingStatusService({
+    const booking = await updateBookingStatusService(db, {
         id: id as string,
         status: status as "pending" | "confirmed" | "cancelled",
     });
@@ -64,7 +65,7 @@ const updateBookingStatusController = async (req: Request, res: Response) => {
 const deleteBookingController = async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    const booking = await deleteBookingService({
+    const booking = await deleteBookingService(db, {
         id
     });
 

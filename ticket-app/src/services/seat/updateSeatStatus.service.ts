@@ -1,4 +1,4 @@
-import db from "@/database/drizzle";
+import { DrizzlePool } from "@/common/types";
 import { seats } from "@/models";
 import { eq } from "drizzle-orm";
 
@@ -7,7 +7,7 @@ export interface UpdateSeatStatusRequest {
     status: "open" | "ongoing" | "booked";
 }
 
-const updateSeatStatusService = async (req: UpdateSeatStatusRequest) => {
+const updateSeatStatusService = async (db: DrizzlePool, req: UpdateSeatStatusRequest) => {
     console.log(`updateSeatStatus: updating seat with id ${req.id} and status ${req.status}.`);
 
     const {status, id} = req;

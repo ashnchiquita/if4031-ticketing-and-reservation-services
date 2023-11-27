@@ -1,4 +1,4 @@
-import db from "@/database/drizzle";
+import { DrizzlePool } from "@/common/types";
 import { bookings, seats } from "@/models";
 import { eq } from "drizzle-orm";
 
@@ -6,7 +6,7 @@ export interface GetSeatByIdRequest {
     id: string;
 }
 
-const getBookingByIdService = async (req: GetSeatByIdRequest) => {
+const getBookingByIdService = async (db: DrizzlePool,  req: GetSeatByIdRequest) => {
     console.log(`getBookingByIdService: ${JSON.stringify(req)}`);
     const {id} = req;
     const res = await db.select({

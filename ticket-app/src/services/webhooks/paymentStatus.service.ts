@@ -1,5 +1,9 @@
-import { HttpError } from "@/utils";
 import { getBookingByIdService, updateBookingStatusService } from "../booking";
+import producer from "@/utils/amqp/producer";
+import { eq } from "drizzle-orm";
+import { seats } from "@/models";
+import { generatePaymentStatusPDF } from "@/utils/pdfgenerator";
+import { DrizzlePool } from "@/common/types";
 
 export interface PaymentStatusRequest {
     bookingId: string;
@@ -7,29 +11,55 @@ export interface PaymentStatusRequest {
     message: string;
 }
 
-const paymentStatusService =  async (paymentStatusRequest: PaymentStatusRequest) => {
-    const { bookingId, status, message } = paymentStatusRequest;
-    console.log(`paymentStatusService: ${JSON.stringify(paymentStatusRequest)}`);
+const paymentStatusService =  async (db: DrizzlePool, req: PaymentStatusRequest) => {
+    const { bookingId, status, message } = req;
+    console.log(`paymentStatusService: ${JSON.stringify(req)}`);
 
-    const existingBooking = await getBookingByIdService({ id: bookingId });
-
-    if (!existingBooking) {
-        throw new HttpError(404, `Booking with id ${bookingId} not found.`);
-    }
+    return await db.transaction(async (trx) => {
+        const booking = await updateBookingStatusService(trx, {
+            id: bookingId,
+            status: status === "success" ? "confirmed" : "cancelled"
+        }, ["pending"]);
+        
+        if (!booking) {
+            return null
+        }
     
-    if (existingBooking.status !== "pending") {
-        throw new HttpError(400, `Booking with id ${bookingId} is not pending.`);
-    }
+        const seatDetail = await trx.query.seats.findFirst({
+            where: eq(seats.id, booking.seat_id),
+            with: {
+                event: {
+                    columns: {
+                        title: true
+                    }
+                }
+            },
+            columns: {
+                number: true,
+                event_id: true,
+            }
+        })
+    
+        const bookingDetail = {
+            ...booking,
+            seat: seatDetail,
+            message: message,
+        }
+    
+        // TODO! Create and upload PDF to s3
+        console.log(`paymentStatusService: generate PDF...`);
+        generatePaymentStatusPDF(bookingDetail);
+    
+        // TODO! Send to client's message queue
+        console.log(`paymentStatusService: sending message to client's message queue.`);
+        // const msg = {
+        //     action: '..',
+        //     data: {  },
+        // }
+        // producer(JSON.stringify(msg))
+        return bookingDetail;
 
-
-    const booking = await updateBookingStatusService({
-        id: bookingId,
-        status: status === "success" ? "confirmed" : "cancelled"
-    });
-
-    // TODO! Send to client's message queue
-    console.log(`paymentStatusService: sending message to client's message queue.`);
-    return booking;
+    })
 }
 
 export default paymentStatusService;

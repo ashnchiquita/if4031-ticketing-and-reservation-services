@@ -1,3 +1,4 @@
+import db from "@/database/drizzle";
 import { createSeatService, deleteSeatService, getSeatByIdService, getSeatsService, updateSeatService, updateSeatStatusService } from "@/services/seat";
 import { JsonResponse } from "@/utils";
 import { Request, Response } from "express";
@@ -5,7 +6,7 @@ import { Request, Response } from "express";
 const getSeatByIdController = async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    const seat = await getSeatByIdService({
+    const seat = await getSeatByIdService(db, {
         id
     });
 
@@ -19,7 +20,7 @@ const getSeatByIdController = async (req: Request, res: Response) => {
 const getSeatsController = async (req: Request, res: Response) => {
     const { page, pageSize, eventId, status } = req.query;
     
-    const seatList = await getSeatsService({
+    const seatList = await getSeatsService(db, {
         page: page as string,
         pageSize: pageSize as string,
         eventId: eventId as string,
@@ -32,7 +33,7 @@ const getSeatsController = async (req: Request, res: Response) => {
 const createSeatController = async (req: Request, res: Response) => {
     const { eventId, number } = req.body;
 
-    const seat = await createSeatService({
+    const seat = await createSeatService(db, {
         eventId,
         number
     });
@@ -44,7 +45,7 @@ const updateSeatController = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status, number, event_id } = req.body;
 
-    const seat = await updateSeatService({
+    const seat = await updateSeatService(db, {
        id: id as string,
        status: status as "open" | "ongoing" | "booked",
        number: number,
@@ -62,7 +63,7 @@ const updateSeatStatusController = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const seat = await updateSeatStatusService({
+    const seat = await updateSeatStatusService(db, {
         id: id as string,
         status: status as "open" | "ongoing" | "booked",
     });
@@ -77,7 +78,7 @@ const updateSeatStatusController = async (req: Request, res: Response) => {
 const deleteSeatController = async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    const seat = await deleteSeatService({
+    const seat = await deleteSeatService(db, {
         id
     });
 

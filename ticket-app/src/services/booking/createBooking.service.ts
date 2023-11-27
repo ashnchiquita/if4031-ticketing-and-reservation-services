@@ -1,8 +1,8 @@
-import db from "@/database/drizzle";
 import { bookings, seats } from "@/models";
 import { DrizzleError, and, eq, not } from "drizzle-orm";
 import { createBookingQueueService } from "../bookingQueue";
 import { HttpError } from "@/utils";
+import { DrizzlePool } from "@/common/types";
 
 export interface createBookingServiceSchema {
     seatId: string;
@@ -26,42 +26,41 @@ const simulateExternalCall  = async () => {
     });
 }
 
-const createBookingService = async (req: createBookingServiceSchema) => {
+const createBookingService = async (db: DrizzlePool, req: createBookingServiceSchema) => {
     console.log(`createBooking: ${JSON.stringify(req)}`);
 
     const { seatId, userId } = req;
 
     try {
-        // Simulate external call
-        await simulateExternalCall();
-        
-        // Check if booking exists
-        const existingBookings = await db.select().from(bookings).where(and(eq(bookings.seat_id, seatId), not(eq(bookings.status, "cancelled")))).limit(1);
-
-        const existingBooking = existingBookings[0];
-        
-        if (existingBooking) {
-            if (existingBooking.status === "confirmed") {
-                throw new DrizzleError({
-                    message: `Seat with id ${seatId} is already booked.`,
-                });
-            } else if (existingBooking.status === "pending") {
-                if (existingBooking.user_id === userId) {
-                    throw new DrizzleError({
-                        message: `Seat with id ${seatId} is already booked by you.`,
-                    });
-                }
-                // Insert into queue
-                await createBookingQueueService({
-                    seatId,
-                    userId,
-                })
-    
-                return null;
-            }
-        }
-
         const res = await db.transaction(async (trx) => {
+            // Simulate external call
+            await simulateExternalCall();
+            
+            // Check if booking exists
+            const existingBookings = await trx.select().from(bookings).where(and(eq(bookings.seat_id, seatId), not(eq(bookings.status, "cancelled")))).limit(1);
+    
+            const existingBooking = existingBookings[0];
+            
+            if (existingBooking) {
+                if (existingBooking.status === "confirmed") {
+                    throw new DrizzleError({
+                        message: `Seat with id ${seatId} is already booked.`,
+                    });
+                } else if (existingBooking.status === "pending") {
+                    if (existingBooking.user_id === userId) {
+                        throw new DrizzleError({
+                            message: `Seat with id ${seatId} is already booked by you.`,
+                        });
+                    }
+                    // Insert into queue
+                    await createBookingQueueService(trx, {
+                        seatId,
+                        userId,
+                    })
+        
+                    return null;
+                }
+            }
             await trx.update(seats).set({
                 status: "ongoing",
             }).where(eq(seats.id, seatId));
@@ -79,6 +78,10 @@ const createBookingService = async (req: createBookingServiceSchema) => {
                 updated_at: bookings.updated_at,
             })
         })
+
+        if (!res) {
+            return null;
+        }
         
         // TODO! Asynchronous call to payment service
 

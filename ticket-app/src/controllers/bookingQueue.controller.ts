@@ -1,9 +1,10 @@
+import db from "@/database/drizzle";
 import { deleteBookingQueueService, getBookingQueueService } from "@/services/bookingQueue";
 import { JsonResponse } from "@/utils";
 import { Request, Response } from "express";
 
 const getBookingQueueController = async (req: Request, res: Response) => {
-    const queue = await getBookingQueueService({
+    const queue = await getBookingQueueService(db, {
         seatId: req.query.seatId as string,
         page: req.query.page as string,
         pageSize: req.query.pageSize as string,
@@ -13,7 +14,7 @@ const getBookingQueueController = async (req: Request, res: Response) => {
 }
 
 const deleteBookingQueueController = async (req: Request, res: Response) => {
-    const queue = await deleteBookingQueueService({
+    const queue = await deleteBookingQueueService(db, {
         id: req.params.id as string,
     });
 

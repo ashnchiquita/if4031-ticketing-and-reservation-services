@@ -1,11 +1,11 @@
-import db from "@/database/drizzle";
+import { DrizzlePool } from "@/common/types";
 import { events } from "@/models";
 
 export interface CreateEventRequestSchema {
     title: string;
 }
 
-const createEventService = async (req: CreateEventRequestSchema) => {
+const createEventService = async (db: DrizzlePool, req: CreateEventRequestSchema) => {
     console.log(`createEvent: creating event with title ${req.title}.`);
 
     const res = await db.insert(events).values({

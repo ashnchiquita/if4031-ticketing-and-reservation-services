@@ -1,13 +1,13 @@
-import db from "@/database/drizzle";
 import { bookings } from "@/models";
 import { eq } from "drizzle-orm";
 import { updateSeatStatusService } from "../seat";
+import { DrizzlePool } from "@/common/types";
 
 export interface DeleteBookingRequest {
     id: string;
 }
 
-const deleteBookingService = async (req: DeleteBookingRequest) => {
+const deleteBookingService = async (db: DrizzlePool, req: DeleteBookingRequest) => {
     console.log(`deleteBookingService: ${JSON.stringify(req)}`);
     const {id} = req;
     const res = await db.transaction(async (trx) => {
@@ -25,7 +25,7 @@ const deleteBookingService = async (req: DeleteBookingRequest) => {
 
         // update seat status to open if booking is confirmed or pending
         if (booking.status === 'confirmed' || booking.status === 'pending') {
-            await updateSeatStatusService({id: booking.seat_id, status: 'open'})
+            await updateSeatStatusService(trx, {id: booking.seat_id, status: 'open'})
         }
 
         return booking

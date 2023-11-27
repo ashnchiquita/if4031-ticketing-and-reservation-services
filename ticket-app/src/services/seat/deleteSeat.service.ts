@@ -1,4 +1,4 @@
-import db from "@/database/drizzle";
+import { DrizzlePool } from "@/common/types";
 import { seats } from "@/models";
 import { eq } from "drizzle-orm";
 
@@ -6,7 +6,7 @@ export interface DeleteSeatRequest {
     id: string;
 }
 
-const deleteSeatService = async (req: DeleteSeatRequest) => {
+const deleteSeatService = async (db: DrizzlePool, req: DeleteSeatRequest) => {
     console.log(`deleteSeatService: ${JSON.stringify(req)}`);
     const {id} = req;
     const res = await db.delete(seats).where(eq(seats.id, id))

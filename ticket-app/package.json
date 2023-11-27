@@ -10,8 +10,8 @@
     "serve": "export NODE_ENV=production && node ./dist/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "drizzle:generate": "drizzle-kit generate:pg",
-		"drizzle:push": "drizzle-kit push:pg",
-		"drizzle:seed": "node --loader esbuild-register/loader -r esbuild-register ./dist/src/seed/index.js"
+    "drizzle:push": "drizzle-kit push:pg",
+    "drizzle:seed": "node --loader esbuild-register/loader -r esbuild-register ./dist/src/seed/index.js"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,7 @@
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^4.17.21",
     "@types/google-protobuf": "^3.15.12",
+    "@types/qrcode": "^1.5.5",
     "drizzle-kit": "^0.20.1",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.1",
@@ -33,6 +34,7 @@
     "@google-cloud/datacatalog": "^4.1.0",
     "@grpc/grpc-js": "^1.9.9",
     "@types/pg": "^8.10.9",
+    "amqplib": "^0.10.3",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "dotenv": "^16.3.1",
@@ -41,8 +43,10 @@
     "grpc_tools_node_protoc_ts": "^5.3.3",
     "grpc-tools": "^1.12.4",
     "grpc-ts-middleware": "^1.0.11",
+    "jspdf": "^2.5.1",
     "module-alias": "^2.2.3",
     "pg": "^8.11.3",
+    "qrcode": "^1.5.3",
     "zod": "^3.22.4"
   },
   "_moduleAliases": {

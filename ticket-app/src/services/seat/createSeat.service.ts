@@ -1,4 +1,4 @@
-import db from "@/database/drizzle";
+import { DrizzlePool } from "@/common/types";
 import { seats } from "@/models";
 import { DrizzleError } from "drizzle-orm";
 
@@ -7,7 +7,7 @@ export interface createSeatRequestSchema {
     number: number;
 }
 
-const createSeatService = async (req: createSeatRequestSchema) => {
+const createSeatService = async (db: DrizzlePool, req: createSeatRequestSchema) => {
     console.log(`createSeat: creating seat with event id ${req.eventId} and number ${req.number}.`);
 
     const { eventId, number } = req;

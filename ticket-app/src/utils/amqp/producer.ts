@@ -1,3 +1,4 @@
+import env from '@/config/env'
 import amqp, { Connection } from 'amqplib/callback_api'
 
 const createMQProducer = (amqpUrl: string, queueName: string) => {
@@ -25,4 +26,6 @@ const createMQProducer = (amqpUrl: string, queueName: string) => {
   }
 }
 
-export default createMQProducer
+const producer = createMQProducer(env.RABBITMQ_URL, env.CLIENT_QUEUE_NAME)
+
+export default producer

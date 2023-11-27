@@ -1,4 +1,4 @@
-import db from "@/database/drizzle";
+import { DrizzlePool } from "@/common/types";
 import { events } from "@/models";
 import { eq } from "drizzle-orm";
 
@@ -6,7 +6,7 @@ export interface GetEventByIdRequest {
     id: string;
 }
 
-const getEventByIdService = async (req: GetEventByIdRequest) => {
+const getEventByIdService = async (db: DrizzlePool, req: GetEventByIdRequest) => {
     console.log(`getEventByIdService: ${JSON.stringify(req)}`);
     const res = await db.select({
         title: events.title,

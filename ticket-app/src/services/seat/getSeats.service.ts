@@ -1,4 +1,4 @@
-import db from "@/database/drizzle";
+import { DrizzlePool } from "@/common/types";
 import { seats } from "@/models";
 import { and, eq } from "drizzle-orm";
 import { PgSelect } from "drizzle-orm/pg-core";
@@ -26,7 +26,7 @@ function withFilter<T extends PgSelect>(qb: T, status?: "open" | "ongoing" | "bo
     return qb
 }
 
-const getSeatsService = async (req: GetSeatsRequest) => {
+const getSeatsService = async (db: DrizzlePool, req: GetSeatsRequest) => {
     console.log(`getSeatsService: ${JSON.stringify(req)}`);
     const pageSize = req.pageSize ? parseInt(req.pageSize) : 25;
     const eventId = req.eventId

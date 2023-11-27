@@ -1,4 +1,4 @@
-import db from "@/database/drizzle";
+import { DrizzlePool } from "@/common/types";
 import { seats } from "@/models";
 import { DrizzleError, eq } from "drizzle-orm";
 
@@ -9,7 +9,7 @@ export interface UpdateSeatRequest {
     eventId: string;
 }
 
-const updateEventService = async (req: UpdateSeatRequest) => {
+const updateEventService = async (db: DrizzlePool, req: UpdateSeatRequest) => {
     console.log(`updateEvent: updating event with id ${req.id} and payload ${JSON.stringify(req)}`);
 
     const {id, number, status , eventId} = req;
