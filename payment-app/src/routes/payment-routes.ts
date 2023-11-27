@@ -15,18 +15,21 @@ export async function createInvoice(req: Request, res: Response) {
   // called synchronously
   try {
     const body = UUID.parse(req.body);
-    const invoice = await controller.create(types.Uuid.fromString(body.bookingId));
+    await controller.create(types.Uuid.fromString(body.bookingId));
+
+    const invoice = await controller.get(types.Uuid.fromString(body.bookingId));
 
     // generate jwt token
-    const token = jwt.sign(invoice, process.env.JWT_SECRET_KEY as string);
+    const token = jwt.sign(invoice, process.env.JWT_SECRET as string);
 
     const data = {
       invoice: invoice,
-      paymentUrl: `${process.env.PAYMENT_URL}/pay?token=${token}`,
+      paymentUrl: `http://${process.env.PAYMENT_SERVICE_HOST}:${process.env.PAYMENT_SERVICE_PORT}/payment?token=${token}`,
     };
 
     return createResponse(res, StatusCodes.OK, ReasonPhrases.OK, data);
   } catch (err) {
+    console.error(err);
     if (err instanceof ZodError) {
       return createResponse(res, StatusCodes.BAD_REQUEST, 'Invalid booking id.');
     }
@@ -44,7 +47,7 @@ export async function pay(req: Request, res: Response) {
       return createResponse(res, StatusCodes.BAD_REQUEST, ReasonPhrases.BAD_REQUEST, 'No token provided.');
     }
 
-    jwt.verify(token, process.env.JWT_SECRET_KEY as string);
+    jwt.verify(token, process.env.JWT_SECRET as string);
 
     // Simulate 20% failure rate if token verified
     if (Math.floor(Math.random() * 5) === 1) {
@@ -53,7 +56,7 @@ export async function pay(req: Request, res: Response) {
 
     const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 
-    const body = UUID.parse(payload.bookingId);
+    const body = UUID.parse({ bookingId: payload.bookingId });
     const invoice = await controller.update(types.Uuid.fromString(body.bookingId), true);
 
     // TODO: call webhook

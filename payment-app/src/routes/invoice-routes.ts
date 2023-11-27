@@ -11,7 +11,8 @@ const controller = new InvoicesController();
 export async function create(req: Request, res: Response) {
   try {
     const body = UUID.parse(req.body);
-    const data = await controller.create(types.Uuid.fromString(body.bookingId));
+    await controller.create(types.Uuid.fromString(body.bookingId));
+    const data = await controller.get(types.Uuid.fromString(body.bookingId));
     return createResponse(res, StatusCodes.OK, ReasonPhrases.OK, data);
   } catch (err) {
     if (err instanceof ZodError) {
