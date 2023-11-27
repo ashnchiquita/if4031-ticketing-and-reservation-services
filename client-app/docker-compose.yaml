@@ -1,20 +1,20 @@
 version: "3.8"
 services:
-  client-service-app:
+  client_app:
     build: .
     ports:
       - 3333:3333
-    hostname: client-service-app
+    hostname: tubes-client-app
     env_file: .env
     volumes:
       - ./:/usr/app
     depends_on:
-      - client-service-db
-  client-service-db:
+      - client_app_db
+  client_app_db:
     image: postgres:alpine
     ports:
-      - 5435:5432
-    hostname: client-service-db
+      - 5436:5432
+    hostname: tubes-client-app-db
     env_file: .env
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
