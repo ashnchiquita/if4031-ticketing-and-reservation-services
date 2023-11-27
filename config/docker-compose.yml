@@ -3,9 +3,11 @@ services:
   rabbitmq:
     image: rabbitmq:3-management-alpine
     hostname: tubes-message-broker
+    env_file:
+      - .env
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      RABBITMQ_DEFAULT_USER: ${MESSAGE_BROKER_USER}
+      RABBITMQ_DEFAULT_PASS: ${MESSAGE_BROKER_PASSWORD}
     ports:
       - "5673:5672"
       - "15673:15672"
@@ -18,7 +20,7 @@ services:
     image: postgres:latest
     hostname: tubes-ticket-app-db
     restart: always
-    env_file: 
+    env_file:
       - .env
     volumes:
       - "../ticket-app/db:/var/lib/postgresql/data"
