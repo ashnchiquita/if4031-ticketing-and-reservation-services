@@ -8,8 +8,10 @@ services:
     env_file: .env
     volumes:
       - ./:/usr/app
+    restart: always
     depends_on:
       - client_app_db
+      - rabbitmq
   client_app_db:
     image: postgres:alpine
     ports:
@@ -20,3 +22,17 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    hostname: tubes-message-broker
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      interval: 5s
+      timeout: 60s
+      # retries: 1

@@ -10,6 +10,7 @@ import (
 
 	booking_controller "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/controllers/booking"
 	user_controller "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/controllers/user"
+	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/queues"
 )
 
 func main() {
@@ -22,13 +23,19 @@ func main() {
 
 	r.Use(middleware.Logger)
 
+	// User routes
 	r.Post("/user", user_controller.CreateUser)
 	r.Get("/user/{userId}", user_controller.GetUserById)
 	r.Put("/user/{userId}", user_controller.UpdateUser)
 	r.Delete("/user/{userId}", user_controller.DeleteUser)
 
+	// Booking routes
 	r.Post("/booking", booking_controller.CreateBooking)
 	r.Post("/booking/payment", booking_controller.CreatePayment)
 
+	// RabbitMQ queues initialization
+	queues.InitPaymentQueue()
+
+	// Starts go http server
 	http.ListenAndServe(":3333", r)
 }
