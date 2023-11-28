@@ -2,6 +2,7 @@ import { bookingQueue, bookings, seats } from "@/models";
 import { and, eq, inArray } from "drizzle-orm";
 import { getBookingQueueHeadService } from "../bookingQueue";
 import { BookingStatus, DrizzlePool } from "@/common/types";
+import createPaymentService from "../payment/createPayment.service";
 
 export interface UpdateBookingStatusRequest { 
     id: string;
@@ -14,6 +15,7 @@ const updateBookingStatusService = async (db: DrizzlePool,  req: UpdateBookingSt
     const {status, id} = req;
 
     const seat = await db.transaction(async (trx) => {
+      // update booking status
       const res =  await trx.update(bookings).set({
           status: status,
         }).where(and(eq(bookings.id, id), inArray(bookings.status, allowedStatus))).returning({
@@ -44,11 +46,17 @@ const updateBookingStatusService = async (db: DrizzlePool,  req: UpdateBookingSt
         //TODO! Process Queue
         const nextBooking = await getBookingQueueHeadService(trx, { seatId: booking.seat_id });
         if (nextBooking) {
-          await trx.insert(bookings).values({
+          const res = await trx.insert(bookings).values({
             seat_id: nextBooking.seat_id,
             user_id: nextBooking.user_id,
             status: "pending",
-          })
+          }).returning({
+            id: bookings.id})
+
+          // Create payment
+          const payment = await createPaymentService({bookingId: res[0].id})
+          
+          // TODO! Send to client queue?
         } else {
           await trx.update(seats).set({
             status: "open",

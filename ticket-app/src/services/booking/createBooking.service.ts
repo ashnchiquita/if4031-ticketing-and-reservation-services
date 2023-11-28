@@ -3,6 +3,7 @@ import { DrizzleError, and, eq, not } from "drizzle-orm";
 import { createBookingQueueService } from "../bookingQueue";
 import { HttpError } from "@/utils";
 import { DrizzlePool } from "@/common/types";
+import createPaymentService from "../payment/createPayment.service";
 
 export interface createBookingServiceSchema {
     seatId: string;
@@ -35,7 +36,7 @@ const createBookingService = async (db: DrizzlePool, req: createBookingServiceSc
         // Simulate external call
         await simulateExternalCall();
         
-        const res = await db.transaction(async (trx) => {
+        const booking = await db.transaction(async (trx) => {
             // Check if booking exists
             const existingBookings = await trx.select().from(bookings).where(and(eq(bookings.seat_id, seatId), not(eq(bookings.status, "cancelled")))).limit(1);
     
@@ -65,7 +66,7 @@ const createBookingService = async (db: DrizzlePool, req: createBookingServiceSc
                 status: "ongoing",
             }).where(eq(seats.id, seatId));
 
-            return await trx.insert(bookings).values({
+            const res = await trx.insert(bookings).values({
                 seat_id: seatId,
                 user_id: userId,
                 status: "pending",
@@ -77,16 +78,24 @@ const createBookingService = async (db: DrizzlePool, req: createBookingServiceSc
                 created_at: bookings.created_at,
                 updated_at: bookings.updated_at,
             })
+
+            const booking = res[0]
+
+            const payment = await createPaymentService({bookingId: booking.id})
+
+            return {
+                ...booking,
+                paymentUrl: payment.data.paymentUrl,
+            }
         })
 
-        if (!res) {
+        console.log(`[INFO] Booking created: ${JSON.stringify(booking)}`);
+
+        if (!booking) {
             return null;
         }
-        
-        // TODO! Asynchronous call to payment service
 
-        const event = res[0];
-        return event;
+        return booking;
     } catch (err) {
         if (err instanceof Error) {
             if (err.message === 'insert or update on table "bookings" violates foreign key constraint "bookings_seat_id_seats_uuid_fk"') {
