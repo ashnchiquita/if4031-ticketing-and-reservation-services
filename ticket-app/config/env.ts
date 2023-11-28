@@ -121,6 +121,22 @@ const envSchema = z.object({
       message: 'S3_REGION must be at least 1 character long.',
     })
     .max(255),
+  PAYMENT_APP_URL: z
+    .string({
+      required_error: 'PAYMENT_APP_URL is required.',
+    })
+    .min(1, {
+      message: 'PAYMENT_APP_URL must be at least 1 character long.',
+    })
+    .max(255),
+  PAYMENT_OUTBOUND_API_KEY: z
+    .string({
+      required_error: 'PAYMENT_OUTBOUND_API_KEY is required.',
+    })
+    .min(1, {
+      message: 'PAYMENT_OUTBOUND_API_KEY must be at least 1 character long.',
+    })
+    .max(255),
 })
 
 const env = envSchema.safeParse(process.env)

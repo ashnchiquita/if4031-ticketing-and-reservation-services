@@ -1,3 +1,4 @@
+import env from "@/config/env";
 import { HttpError } from "@/utils";
 
 export interface CreatePaymentRequest {
@@ -6,13 +7,13 @@ export interface CreatePaymentRequest {
 
 const createPaymentService = async (req: CreatePaymentRequest) => {
     console.log(`[INFO] Calling payment service for ${req.bookingId}`)
-    const res = await fetch('http://host.docker.internal:3003/api/payment', {
+    const res = await fetch(`${env.PAYMENT_APP_URL}/payment`, {
         method: 'POST',
         body: JSON.stringify({
             bookingId: req.bookingId,
         }),
         headers: {
-            'x-api-key': "apikey",
+            'x-api-key': env.PAYMENT_OUTBOUND_API_KEY,
             'Content-Type': 'application/json'
         },
     })
