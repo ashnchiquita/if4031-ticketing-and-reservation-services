@@ -3,7 +3,7 @@ services:
   payment:
     build: .
     ports:
-      - 3003:3000
+      - 3003:3003
     hostname: payment
     env_file: .env
     volumes:
