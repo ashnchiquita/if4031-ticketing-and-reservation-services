@@ -50,24 +50,29 @@ export async function pay(req: Request, res: Response) {
     // Get booking id from token
     const token = req.query.token as string;
     if (!token) {
-      return createResponse(res, StatusCodes.BAD_REQUEST, ReasonPhrases.BAD_REQUEST, 'No token provided.');
+      return createResponse(res, StatusCodes.BAD_REQUEST, 'No token provided.');
     }
 
     jwt.verify(token, process.env.JWT_SECRET as string);
+    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    const body = UUID.parse({ bookingId: payload.bookingId });
+
+    // Check if link has been clicked before
+    const data = await controller.get(types.Uuid.fromString(body.bookingId));
+    if (data.status !== 'pending') {
+      return createResponse(res, StatusCodes.BAD_REQUEST, 'Payment already performed.');
+    }
 
     // Simulate 20% failure rate if token verified
     if (Math.floor(Math.random() * 5) === 1) {
       return createResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, 'Payment failed.');
     }
 
-    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-
-    const body = UUID.parse({ bookingId: payload.bookingId });
-    const invoice = await controller.update(types.Uuid.fromString(body.bookingId), true);
+    const invoice = await controller.update(types.Uuid.fromString(body.bookingId), 'success');
 
     // TODO: call webhook
 
-    return createResponse(res, StatusCodes.OK, ReasonPhrases.OK);
+    return createResponse(res, StatusCodes.OK, 'Payment success.');
   } catch (err) {
     if (err instanceof ZodError) {
       return createResponse(res, StatusCodes.BAD_REQUEST, 'Invalid booking id.');

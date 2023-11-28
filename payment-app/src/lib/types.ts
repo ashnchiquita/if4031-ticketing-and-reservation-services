@@ -5,5 +5,5 @@ export const UUID = z.object({
 });
 
 export const Status = z.object({
-  status: z.boolean(),
+  status: z.enum(['pending', 'failed', 'success']),
 });

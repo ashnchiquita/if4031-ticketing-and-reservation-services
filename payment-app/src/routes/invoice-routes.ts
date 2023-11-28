@@ -34,7 +34,9 @@ export async function update(req: Request, res: Response) {
     const params = UUID.parse({ bookingId: req.params.booking_id });
     const body = Status.parse(req.body);
     await controller.update(types.Uuid.fromString(params.bookingId), body.status);
-    return createResponse(res, StatusCodes.OK, ReasonPhrases.OK);
+
+    const data = await controller.get(types.Uuid.fromString(params.bookingId));
+    return createResponse(res, StatusCodes.OK, ReasonPhrases.OK, data);
   } catch (err) {
     if (err instanceof ZodError) {
       return createResponse(res, StatusCodes.BAD_REQUEST, 'Invalid booking id or status.');

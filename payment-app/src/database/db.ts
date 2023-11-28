@@ -14,7 +14,7 @@ export class DB {
       const queries = [
         `CREATE KEYSPACE IF NOT EXISTS payment WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1' }`,
         'USE payment',
-        `CREATE TABLE IF NOT EXISTS invoices (booking_id uuid PRIMARY KEY, status boolean)`,
+        `CREATE TABLE IF NOT EXISTS invoices (booking_id uuid PRIMARY KEY, status int)`, // status is enum, represented by number: { 0: "pending", 1: "failed", 2: "success" }
       ];
 
       let promise: Promise<void | types.ResultSet | null> = Promise.resolve();
