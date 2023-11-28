@@ -15,6 +15,12 @@ export async function createInvoice(req: Request, res: Response) {
   // called synchronously
   try {
     const body = UUID.parse(req.body);
+
+    const prev = await controller.get(types.Uuid.fromString(body.bookingId));
+    if (prev) {
+      return createResponse(res, StatusCodes.BAD_REQUEST, 'An invoice with booking id already exists');
+    }
+
     await controller.create(types.Uuid.fromString(body.bookingId));
 
     const invoice = await controller.get(types.Uuid.fromString(body.bookingId));

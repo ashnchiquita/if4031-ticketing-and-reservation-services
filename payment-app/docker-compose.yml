@@ -1,24 +1,24 @@
 version: '3.0'
 services:
-  payment:
+  payment_app:
     build: .
     ports:
       - 3003:3003
-    hostname: payment
+    hostname: payment_app
     env_file: .env
     volumes:
       - ./src:/usr/src/app/src
     depends_on:
-      payment-db:
+      payment_app_db:
         condition: service_healthy
-    networks:
-      - payment-network
+    # networks:
+    #   - payment-network
 
-  payment-db:
+  payment_app_db:
     image: cassandra:latest
     ports:
       - '9042:9042'
-    hostname: payment-db
+    hostname: payment_app_db
     volumes:
       - ./db:/var/lib/cassandra
     healthcheck:
@@ -27,9 +27,9 @@ services:
       timeout: 5s
       retries: 10
     restart: always
-    networks:
-      - payment-network
+#     networks:
+#       - payment-network
 
-networks:
-  payment-network:
-    driver: bridge
+# networks:
+#   payment-network:
+#     driver: bridge
