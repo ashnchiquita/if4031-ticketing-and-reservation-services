@@ -1,5 +1,5 @@
-import {getBookingByIdService, updateBookingStatusService} from '../booking'
-import producer from '@/utils/amqp/producer'
+import {updateBookingStatusService} from '../booking'
+import {bookingMQProducer} from '@/utils/amqp/producer'
 import {eq} from 'drizzle-orm'
 import {seats} from '@/models'
 import {generatePaymentStatusPDF} from '@/utils/pdfgenerator'
@@ -59,13 +59,14 @@ const paymentStatusService = async (db: DrizzlePool, req: PaymentStatusRequest) 
     const url = await upload(`${bookingId}.pdf`, blob)
     console.log(url)
 
-    // TODO! Send to client's message queue
     console.log(`paymentStatusService: sending message to client's message queue.`)
-    // const msg = {
-    //     action: '..',
-    //     data: {  },
-    // }
-    // producer(JSON.stringify(msg))
+    const msg = {
+        bookingId: bookingId,
+        status: status,
+        message: message,
+        pdfUrl: url
+    }
+    bookingMQProducer(JSON.stringify(msg))
     return bookingDetail
   })
 }

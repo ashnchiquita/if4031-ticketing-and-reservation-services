@@ -26,6 +26,6 @@ const createMQProducer = (amqpUrl: string, queueName: string) => {
   }
 }
 
-const producer = createMQProducer(env.RABBITMQ_URL, env.CLIENT_QUEUE_NAME)
+export const bookingMQProducer = createMQProducer(env.RABBITMQ_URL, "booking_message")
 
-export default producer
+export default createMQProducer

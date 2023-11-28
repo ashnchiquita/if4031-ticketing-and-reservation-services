@@ -32,10 +32,10 @@ const createBookingService = async (db: DrizzlePool, req: createBookingServiceSc
     const { seatId, userId } = req;
 
     try {
+        // Simulate external call
+        await simulateExternalCall();
+        
         const res = await db.transaction(async (trx) => {
-            // Simulate external call
-            await simulateExternalCall();
-            
             // Check if booking exists
             const existingBookings = await trx.select().from(bookings).where(and(eq(bookings.seat_id, seatId), not(eq(bookings.status, "cancelled")))).limit(1);
     
