@@ -1,4 +1,4 @@
-package queues
+package consumers
 
 import (
 	"log"
@@ -7,7 +7,7 @@ import (
 	messagebroker "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/singletons/message-broker"
 )
 
-func InitBookingQueue() {
+func PaymentConsumer() {
 	conn := messagebroker.GetInstance()
 
 	ch, err := conn.Channel()
@@ -18,7 +18,7 @@ func InitBookingQueue() {
 
 	defer ch.Close()
 
-	queue, err := ch.QueueDeclare("booking_message", true, false, false, false, nil)
+	queue, err := ch.QueueDeclare("payment_message", true, false, false, false, nil)
 	if err != nil {
 		log.Panicf("Failed to declare a queue: %s", err.Error())
 		return
@@ -32,8 +32,8 @@ func InitBookingQueue() {
 
 	var forever chan struct{}
 
-	go booking_controller.AcceptBooking(messages)
+	go booking_controller.AcceptPayment(messages)
 
-	log.Printf("[*] Booking waiting for messages")
+	log.Printf("[*] Payment waiting for messages")
 	<-forever
 }
