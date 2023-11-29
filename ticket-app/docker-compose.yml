@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  ticket_app_db:
+    image: postgres:latest
+    hostname: tubes-ticket-app-db
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - "./db:/var/lib/postgresql/data"
+      - "./migrations:/docker-entrypoint-initdb.d/"
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+    networks:
+      - app-network
+  ticket_app:
+    build: .
+    restart: always
+    volumes:
+      - ./src:/usr/src/app/src
+    ports:
+      - "8002:8002"
+    depends_on:
+      ticket_app_db:
+        condition: service_healthy
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
