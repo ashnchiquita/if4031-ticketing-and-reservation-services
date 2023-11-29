@@ -25,14 +25,9 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 	result := db.First(&user, "id = ?", chi.URLParam(r, "userId"))
 	if result.Error != nil {
 		log.Println(result.Error.Error())
-		msg := lib.ResponseMessage{
-			Message: "invalid user id",
-		}
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(msg)
-
+		resMsg := "invalid user id"
+		lib.SendResponseMessage(w, resMsg, http.StatusNotFound)
 		return
 	}
 

@@ -1,7 +1,6 @@
 package user_controller
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
@@ -17,11 +16,6 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(chi.URLParam(r, "userId"))
 
-	msg := lib.ResponseMessage{
-		Message: "success",
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(msg)
+	resMsg := "success"
+	lib.SendResponseMessage(w, resMsg, http.StatusOK)
 }

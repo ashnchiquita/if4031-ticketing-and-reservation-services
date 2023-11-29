@@ -24,14 +24,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	// Check for invalid request body
 	if userReq.Email == "" || userReq.Password == "" || userReq.Username == "" {
-		msg := lib.ResponseMessage{
-			Message: "invalid request",
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(msg)
-
+		resMsg := "invalid request"
+		lib.SendResponseMessage(w, resMsg, http.StatusBadRequest)
 		return
 	}
 
@@ -39,14 +33,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(userReq.Password), 14)
 	if err != nil {
 		log.Println(err.Error())
-		msg := lib.ResponseMessage{
-			Message: err.Error(),
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(msg)
-
+		lib.SendResponseMessage(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -58,11 +45,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		Email:        userReq.Email,
 	})
 
-	msg := lib.ResponseMessage{
-		Message: "success",
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(msg)
+	resMsg := "success"
+	lib.SendResponseMessage(w, resMsg, http.StatusCreated)
 }

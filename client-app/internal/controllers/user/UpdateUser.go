@@ -34,14 +34,9 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	if result.Error != nil {
 		log.Println(result.Error.Error())
-		msg := lib.ResponseMessage{
-			Message: "invalid user id",
-		}
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(msg)
-
+		resMsg := "invalid user id"
+		lib.SendResponseMessage(w, resMsg, http.StatusNotFound)
 		return
 	}
 
@@ -50,14 +45,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		passwordHash, err = bcrypt.GenerateFromPassword([]byte(userReq.Password), 14)
 		if err != nil {
 			log.Println(err.Error())
-			msg := lib.ResponseMessage{
-				Message: err.Error(),
-			}
-
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(msg)
-
+			lib.SendResponseMessage(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
@@ -69,11 +57,6 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		Email:        userReq.Email,
 	})
 
-	msg := lib.ResponseMessage{
-		Message: "success",
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(msg)
+	resMsg := "success"
+	lib.SendResponseMessage(w, resMsg, http.StatusCreated)
 }

@@ -36,14 +36,8 @@ func CreateBooking(w http.ResponseWriter, r *http.Request) {
 
 	// Check for invalid request body
 	if bookingReq.UserId == "" || bookingReq.SeatId == "" {
-		msg := lib.ResponseMessage{
-			Message: "invalid request",
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(msg)
-
+		resMsg := "invalid request"
+		lib.SendResponseMessage(w, resMsg, http.StatusBadRequest)
 		return
 	}
 
@@ -53,13 +47,9 @@ func CreateBooking(w http.ResponseWriter, r *http.Request) {
 
 	if result.Error != nil {
 		log.Println(result.Error.Error())
-		msg := lib.ResponseMessage{
-			Message: "invalid user id",
-		}
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(msg)
+		resMsg := "invalid user id"
+		lib.SendResponseMessage(w, resMsg, http.StatusNotFound)
 
 		return
 	}
@@ -69,16 +59,10 @@ func CreateBooking(w http.ResponseWriter, r *http.Request) {
 		"userId": "` + bookingReq.UserId + `",
 		"seatId": "` + bookingReq.SeatId + `"
 	}`)
+
 	req, err := http.NewRequest("POST", "http://host.docker.internal:8002/api/v1/booking", bytes.NewBuffer(reqBody))
 	if err != nil {
-		msg := lib.ResponseMessage{
-			Message: err.Error(),
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(msg)
-
+		lib.SendResponseMessage(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	req.Header.Add("Content-Type", "application/json")
@@ -86,14 +70,7 @@ func CreateBooking(w http.ResponseWriter, r *http.Request) {
 
 	res, err := (&http.Client{}).Do(req)
 	if err != nil {
-		msg := lib.ResponseMessage{
-			Message: err.Error(),
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(msg)
-
+		lib.SendResponseMessage(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer res.Body.Close()
@@ -101,47 +78,24 @@ func CreateBooking(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(res.Body).Decode(&ticketRes)
 
 	if ticketRes.Message == "Success" {
-		msg := lib.ResponseMessage{
-			Message: ticketRes.Message,
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(msg)
+		lib.SendResponseMessage(w, ticketRes.Message, http.StatusOK)
 
 	} else if ticketRes.Message == "External call failed. Please try again later." {
 		// Send email if booking failed
 		err = mailsender.SendFailedMail(user.Email, ticketRes.Data.PdfURL)
 
 		if err != nil {
-			msg := lib.ResponseMessage{
-				Message: err.Error(),
-			}
-
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(msg)
-
+			lib.SendResponseMessage(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		msg := lib.ResponseMessage{
-			Message: ticketRes.Message,
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(msg)
+		lib.SendResponseMessage(w, ticketRes.Message, http.StatusInternalServerError)
 
 	} else {
 		// Handle error from other services
 		log.Println("ERROR: unknown response message from ticket service")
-		msg := lib.ResponseMessage{
-			Message: "unknown response message from ticket service",
-		}
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(msg)
+		errMsg := "unknown response message from ticket service"
+		lib.SendResponseMessage(w, errMsg, http.StatusInternalServerError)
 	}
 }
