@@ -47,6 +47,7 @@ const updateBookingStatusService = async (db: DrizzlePool,  req: UpdateBookingSt
       } else if (status === "cancelled") {
         const nextBooking = await getBookingQueueHeadService(trx, { seatId: booking.seat_id });
         if (nextBooking) {
+          Logger.info("Processing next booking...")
           const res = await trx.insert(bookings).values({
             seat_id: nextBooking.seat_id,
             user_id: nextBooking.user_id,
@@ -57,7 +58,6 @@ const updateBookingStatusService = async (db: DrizzlePool,  req: UpdateBookingSt
             // Create payment
             const payment = await createPaymentService({bookingId: res[0].id})
             
-            // TODO! Send to client queue?
             Logger.info(`updateBookingStatusService: sending message to client's message queue.`)
             const msg = {
                 userId: nextBooking.user_id,

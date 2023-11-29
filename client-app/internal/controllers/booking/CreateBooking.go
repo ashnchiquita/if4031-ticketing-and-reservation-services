@@ -88,10 +88,6 @@ func CreateBooking(w http.ResponseWriter, r *http.Request) {
 		lib.SendResponseMessage(w, ticketRes.Message, http.StatusInternalServerError)
 
 	} else {
-		// Handle error from other services
-		log.Println("ERROR: unknown response message from ticket service")
-
-		errMsg := "unknown response message from ticket service"
-		lib.SendResponseMessage(w, errMsg, http.StatusInternalServerError)
+		lib.SendResponseMessage(w, ticketRes.Message, http.StatusOK)
 	}
 }

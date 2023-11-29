@@ -16,7 +16,7 @@ export async function createInvoice(req: Request, res: Response) {
   // return id + payment url
   // called synchronously
   try {
-    console.log(`createInvoice: Checking booking`);
+    console.log('createInvoice: Checking booking');
     const body = UUID.parse(req.body);
 
     const prev = await controller.get(types.Uuid.fromString(body.bookingId));
@@ -24,14 +24,14 @@ export async function createInvoice(req: Request, res: Response) {
       return createResponse(res, StatusCodes.BAD_REQUEST, 'An invoice with booking id already exists');
     }
 
-    console.log(`createInvoice: Creating invoice...`);
+    console.log('createInvoice: Creating invoice...');
     await controller.create(types.Uuid.fromString(body.bookingId));
 
     const invoice = await controller.get(types.Uuid.fromString(body.bookingId));
 
     if (!invoice) throw new Error();
 
-    console.log(`createInvoice: Creating payment URL...`);
+    console.log('createInvoice: Creating payment URL...');
     // generate jwt token
     const token = jwt.sign(invoice, process.env.JWT_SECRET as string);
 
@@ -56,7 +56,7 @@ export async function pay(req: Request, res: Response) {
   // Result determined from the first click (first GET request)
   try {
     // Get booking id from token
-    console.log(`pay: Validating token...`);
+    console.log('pay: Validating token...');
     const token = req.query.token as string;
     if (!token) {
       return createResponse(res, StatusCodes.BAD_REQUEST, 'No token provided.');
@@ -67,7 +67,7 @@ export async function pay(req: Request, res: Response) {
     const body = UUID.parse({ bookingId: payload.bookingId });
 
     // Check if link has been clicked before
-    console.log(`pay: Validating payment status...`);
+    console.log('pay: Validating payment status...');
     const data = await controller.get(types.Uuid.fromString(body.bookingId));
     if (data.status !== 'pending') {
       console.log('pay: Link already clicked');
