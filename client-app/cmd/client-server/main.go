@@ -26,6 +26,7 @@ func main() {
 
 	// User routes
 	r.Post("/user", user_controller.CreateUser)
+	r.Get("/user/all", user_controller.GetAllUser)
 	r.Get("/user/{userId}", user_controller.GetUserById)
 	r.Put("/user/{userId}", user_controller.UpdateUser)
 	r.Delete("/user/{userId}", user_controller.DeleteUser)
