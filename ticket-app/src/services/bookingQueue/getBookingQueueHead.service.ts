@@ -18,8 +18,6 @@ const getBookingQueueHeadService = async (db: DrizzlePool, req: GetBookingQueueH
             id: bookingQueue.id,
             seat_id: bookingQueue.seat_id,
             user_id: bookingQueue.user_id,
-            created_at: bookingQueue.created_at,
-            updated_at: bookingQueue.updated_at,
         }).from(bookingQueue)
         .where(eq(bookingQueue.seat_id, seatId))
         .orderBy(asc(bookingQueue.created_at))

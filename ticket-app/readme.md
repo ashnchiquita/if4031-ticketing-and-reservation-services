@@ -74,3 +74,17 @@ Step by step to run the entire application
 
 1. Navigate to config folder outside of this folder
 2. Follow the step on the README.md file
+
+## How To Migrate
+
+Note: docker will automatically migrate the db's schema. You can see the migrations on ./migrations folder
+
+1. Ensure both container are running and healthy
+2. Open the service container's terminal with `docker exec -it [container id or name] sh`
+3. Run `npm run drizzle:push`
+
+## How To Seed
+
+1. Ensure both container are running and healthy
+2. Open the service container's terminal with `docker exec -it [container id or name] sh`
+3. Run `npm run drizzle:seed` 

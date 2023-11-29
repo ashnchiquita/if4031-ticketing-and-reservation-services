@@ -22,7 +22,12 @@ const getBookingQueueService = async (db: DrizzlePool, req: GetBookingQueueReque
     const seatId = req.seatId
     const page = req.page ? Math.max(parseInt(req.page), 1) : 1;
 
-    let queue = db.select().from(bookingQueue)
+    let queue = db.select({
+        id: bookingQueue.id,
+        seat_id: bookingQueue.seat_id,
+        user_id: bookingQueue.user_id,
+        created_at: bookingQueue.created_at,
+    }).from(bookingQueue)
             .orderBy(asc(bookingQueue.created_at))
             .limit(pageSize)
             .offset(pageSize * (page - 1))
