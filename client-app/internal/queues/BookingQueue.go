@@ -4,7 +4,7 @@ import (
 	"log"
 
 	booking_controller "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/controllers/booking"
-	messagebroker "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/message-broker"
+	messagebroker "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/singletons/message-broker"
 )
 
 func InitBookingQueue() {

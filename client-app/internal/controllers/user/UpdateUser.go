@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/database"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/lib"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/models"
+	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/singletons/database"
 	"github.com/go-chi/chi/v5"
 	"golang.org/x/crypto/bcrypt"
 )

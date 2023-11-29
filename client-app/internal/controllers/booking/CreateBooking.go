@@ -1,13 +1,14 @@
 package booking_controller
 
 import (
+	"bytes"
 	"encoding/json"
 	"log"
 	"net/http"
 
-	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/database"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/lib"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/models"
+	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/singletons/database"
 )
 
 type CreateBookingRequest struct {
@@ -15,8 +16,15 @@ type CreateBookingRequest struct {
 	UserId string `json:"userId"`
 }
 
+type TicketBookingResponse struct {
+	Message string `json:"message"`
+}
+
 func CreateBooking(w http.ResponseWriter, r *http.Request) {
-	var bookingReq CreateBookingRequest
+	var (
+		bookingReq CreateBookingRequest
+		ticketRes  TicketBookingResponse
+	)
 
 	json.NewDecoder(r.Body).Decode(&bookingReq)
 
@@ -51,19 +59,50 @@ func CreateBooking(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Forward booking to ticket service
-	log.Println("Ceritanya manggil ticket service")
-	resMsg := "Error"
-
-	if resMsg == "Success" {
+	reqBody := []byte(`{
+		"userId": "` + bookingReq.UserId + `",
+		"seatId": "` + bookingReq.SeatId + `"
+	}`)
+	req, err := http.NewRequest("POST", "http://host.docker.internal:8002/api/v1/booking", bytes.NewBuffer(reqBody))
+	if err != nil {
 		msg := lib.ResponseMessage{
-			Message: resMsg,
+			Message: err.Error(),
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(msg)
+
+		return
+	}
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := (&http.Client{}).Do(req)
+	if err != nil {
+		msg := lib.ResponseMessage{
+			Message: err.Error(),
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(msg)
+
+		return
+	}
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&ticketRes)
+
+	if ticketRes.Message == "Success" {
+		msg := lib.ResponseMessage{
+			Message: ticketRes.Message,
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(msg)
 
-	} else if resMsg == "Error" {
+	} else if ticketRes.Message == "Error" {
 		// Save the failed booking data
 		db := database.GetInstance()
 		result := db.Create(&models.BookingHistory{
@@ -86,7 +125,7 @@ func CreateBooking(w http.ResponseWriter, r *http.Request) {
 
 		// ! Masih bingung ini status code yg cocok apa
 		msg := lib.ResponseMessage{
-			Message: resMsg,
+			Message: ticketRes.Message,
 		}
 
 		w.Header().Set("Content-Type", "application/json")
