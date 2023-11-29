@@ -1,5 +1,5 @@
 import {updateBookingStatusService} from '../booking'
-import {bookingMQProducer} from '@/utils/amqp/producer'
+import {paymentMQProducer} from '@/utils/amqp/producer'
 import {eq} from 'drizzle-orm'
 import {seats} from '@/models'
 import {generatePaymentStatusPDF} from '@/utils/pdfgenerator'
@@ -67,7 +67,7 @@ const paymentStatusService = async (db: DrizzlePool, req: PaymentStatusRequest) 
         message: message,
         pdfUrl: url
     }
-    bookingMQProducer(JSON.stringify(msg))
+    paymentMQProducer(JSON.stringify(msg))
     return bookingDetail
   })
 }

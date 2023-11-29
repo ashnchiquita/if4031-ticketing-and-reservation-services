@@ -4,6 +4,7 @@ import { getBookingQueueHeadService } from "../bookingQueue";
 import { BookingStatus, DrizzlePool } from "@/common/types";
 import createPaymentService from "../payment/createPayment.service";
 import { Logger } from "@/utils";
+import { bookingMQProducer } from "@/utils/amqp";
 
 export interface UpdateBookingStatusRequest { 
     id: string;
@@ -57,7 +58,13 @@ const updateBookingStatusService = async (db: DrizzlePool,  req: UpdateBookingSt
             const payment = await createPaymentService({bookingId: res[0].id})
             
             // TODO! Send to client queue?
-        } else {
+            Logger.info(`updateBookingStatusService: sending message to client's message queue.`)
+            const msg = {
+                userId: nextBooking.user_id,
+                paymentUrl: payment.data.paymentUrl,
+            }
+            bookingMQProducer(JSON.stringify(msg))        
+          } else {
           await trx.update(seats).set({
             status: "open",
           }).where(eq(seats.id, booking.seat_id))

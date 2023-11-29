@@ -1,8 +1,9 @@
 import createMQConsumer from "./consumer";
-import createMQProducer, {bookingMQProducer} from "./producer";
+import createMQProducer, {paymentMQProducer, bookingMQProducer} from "./producer";
 
 export {
     createMQConsumer,
     createMQProducer,
+    paymentMQProducer,
     bookingMQProducer
 }
