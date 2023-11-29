@@ -1,13 +1,13 @@
-package queues
+package consumers
 
 import (
 	"log"
 
-	booking_controller "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/controllers/booking"
+	email_controller "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/controllers/email"
 	messagebroker "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/singletons/message-broker"
 )
 
-func InitPaymentQueue() {
+func EmailConsumer() {
 	conn := messagebroker.GetInstance()
 
 	ch, err := conn.Channel()
@@ -18,7 +18,7 @@ func InitPaymentQueue() {
 
 	defer ch.Close()
 
-	queue, err := ch.QueueDeclare("payment_message", true, false, false, false, nil)
+	queue, err := ch.QueueDeclare("email_message", true, false, false, false, nil)
 	if err != nil {
 		log.Panicf("Failed to declare a queue: %s", err.Error())
 		return
@@ -32,8 +32,8 @@ func InitPaymentQueue() {
 
 	var forever chan struct{}
 
-	go booking_controller.AcceptPayment(messages)
+	go email_controller.AcceptEmail(messages)
 
-	log.Printf("[*] Payment waiting for messages")
+	log.Printf("[*] Email waiting for messages")
 	<-forever
 }

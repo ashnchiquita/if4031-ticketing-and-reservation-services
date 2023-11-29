@@ -8,9 +8,9 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
 
+	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/consumers"
 	booking_controller "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/controllers/booking"
 	user_controller "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/controllers/user"
-	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/queues"
 	messagebroker "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/singletons/message-broker"
 )
 
@@ -37,8 +37,9 @@ func main() {
 	messagebroker.GetInstance()
 	defer messagebroker.CloseInstance()
 
-	go queues.InitPaymentQueue()
-	go queues.InitBookingQueue()
+	go consumers.PaymentConsumer()
+	go consumers.BookingConsumer()
+	go consumers.EmailConsumer()
 
 	// Starts go http server
 	http.ListenAndServe(":3333", r)

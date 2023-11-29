@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/lib"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/models"
+	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/producers"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/singletons/database"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -34,7 +34,7 @@ func AcceptBooking(msgs <-chan amqp.Delivery) {
 			continue
 		}
 
-		err := lib.SendEmail(user.Email, "Payment URL", msgData.PaymentURL)
+		err := producers.EmailProducer(user.Email, "Payment URL", msgData.PaymentURL)
 		if err != nil {
 			log.Println(err.Error())
 			continue

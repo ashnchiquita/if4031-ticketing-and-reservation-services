@@ -8,6 +8,7 @@ import (
 
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/lib"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/models"
+	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/producers"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/singletons/database"
 )
 
@@ -75,26 +76,14 @@ func CreateBooking(w http.ResponseWriter, r *http.Request) {
 	defer res.Body.Close()
 
 	json.NewDecoder(res.Body).Decode(&ticketRes)
-
 	if ticketRes.Message == "Success" {
-		// Send payment url email
-		err = lib.SendEmail(user.Email, "Payment URL", ticketRes.Data.PaymentURL)
-
-		if err != nil {
-			lib.SendResponseMessage(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		producers.EmailProducer(user.Email, "Payment URL", ticketRes.Data.PaymentURL)
 
 		lib.SendResponseMessage(w, ticketRes.Message, http.StatusOK)
 
 	} else if ticketRes.Message == "External call failed. Please try again later." {
 		// Send booking failed email
-		err = lib.SendEmail(user.Email, "Booking Failed", ticketRes.Data.PdfURL)
-
-		if err != nil {
-			lib.SendResponseMessage(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		producers.EmailProducer(user.Email, "Booking Failed", ticketRes.Data.PdfURL)
 
 		lib.SendResponseMessage(w, ticketRes.Message, http.StatusInternalServerError)
 
