@@ -4,46 +4,58 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/lib"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/models"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/singletons/database"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type AcceptPaymentMessage struct {
-	Status     string `json:"status"`
-	PaymentURL string `json:"paymentUrl"`
-	UserID     string `json:"userId"`
+	Status    string `json:"status"`
+	PdfURL    string `json:"pdfUrl"`
+	BookingID string `json:"bookingId"`
+	UserID    string `json:"userId"`
 }
 
 func AcceptPayment(msgs <-chan amqp.Delivery) {
 	for msg := range msgs {
-		var msgData AcceptPaymentMessage
+		var (
+			user    models.User
+			msgData AcceptPaymentMessage
+		)
 
 		json.Unmarshal(msg.Body, &msgData)
 
-		if msgData.Status == "Success" {
+		db := database.GetInstance()
+		result := db.First(&user, "id = ?", msgData.UserID)
+
+		if result.Error != nil {
+			log.Println(result.Error.Error())
+			continue
+		}
+
+		if msgData.Status == "Success" || msgData.Status == "Fail" {
 			// Save the successfully created booking
 			db := database.GetInstance()
 			result := db.Create(&models.BookingHistory{
 				UserID: msgData.UserID,
-				Status: true,
+				Status: msgData.Status == "Success",
 			})
 
 			// Check if the booking is successfully saved
 			if result.Error == nil {
-				// ! Ini nge return apa????
-				msg.Ack(false)
-			}
-		} else if msgData.Status == "Fail" {
-			// Save the failed booking data
-			db := database.GetInstance()
-			result := db.Create(&models.BookingHistory{
-				UserID: msgData.UserID,
-				Status: false,
-			})
+				err := lib.SendEmail(user.Email, "Booking Failed", msgData.PdfURL)
+				if err != nil {
+					log.Println(err.Error())
+					continue
+				}
 
-			// Check if the booking is successfully saved
-			if result.Error == nil {
+				err = lib.SendEmail(user.Email, "Booking Status", msgData.PdfURL)
+				if err != nil {
+					log.Println(err.Error())
+					continue
+				}
+
 				msg.Ack(false)
 			}
 		} else {
@@ -51,10 +63,3 @@ func AcceptPayment(msgs <-chan amqp.Delivery) {
 		}
 	}
 }
-
-// func AcceptPayment(msgs <-chan amqp.Delivery) {
-// 	for msg := range msgs {
-// 		log.Printf("[*] Received message to payment: %s", msg.Body)
-// 		msg.Ack(false)
-// 	}
-// }

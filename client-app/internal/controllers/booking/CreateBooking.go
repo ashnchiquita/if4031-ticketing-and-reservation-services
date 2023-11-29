@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/lib"
-	mailsender "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/mail-sender"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/models"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/singletons/database"
 )
@@ -78,11 +77,19 @@ func CreateBooking(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(res.Body).Decode(&ticketRes)
 
 	if ticketRes.Message == "Success" {
+		// Send payment url email
+		err = lib.SendEmail(user.Email, "Payment URL", ticketRes.Data.PaymentURL)
+
+		if err != nil {
+			lib.SendResponseMessage(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		lib.SendResponseMessage(w, ticketRes.Message, http.StatusOK)
 
 	} else if ticketRes.Message == "External call failed. Please try again later." {
-		// Send email if booking failed
-		err = mailsender.SendFailedMail(user.Email, ticketRes.Data.PdfURL)
+		// Send booking failed email
+		err = lib.SendEmail(user.Email, "Booking Failed", ticketRes.Data.PdfURL)
 
 		if err != nil {
 			lib.SendResponseMessage(w, err.Error(), http.StatusInternalServerError)
