@@ -23,22 +23,22 @@ type WebhookReq = {
 };
 
 const enqueue = async (req: WebhookReq) => {
-  console.log('Enqueuing:', req);
+  console.log('Queue: Enqueuing:', req);
   webhookQueue.add({ ...req });
 };
 
 webhookQueue.process(async (job: Job) => {
-  console.log('Processing job with data:', job.data);
+  console.log('Queue: Processing job with data:', job.data);
   const { bookingId, status, message } = job.data;
   const res = await updateWebhook(bookingId, status, message);
-  console.log('Webhook response status: ' + res.status);
+  console.log('Queue: Webhook response status: ' + res.status);
 
   if (res.status >= 500) {
     // move to delayed (retry) list
-    console.log('Received internal server error... Moving job to delayed list...');
+    console.log('Queue: Received internal server error... Moving job to delayed list...');
     throw new Error();
   } else if (!res.ok) {
-    console.log('Invalid request, status code = ' + res.status);
+    console.log('Queue: Invalid request, status code = ' + res.status);
   }
 });
 
