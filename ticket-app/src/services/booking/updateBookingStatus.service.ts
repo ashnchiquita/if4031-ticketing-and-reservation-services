@@ -3,6 +3,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import { getBookingQueueHeadService } from "../bookingQueue";
 import { BookingStatus, DrizzlePool } from "@/common/types";
 import createPaymentService from "../payment/createPayment.service";
+import { Logger } from "@/utils";
 
 export interface UpdateBookingStatusRequest { 
     id: string;
@@ -10,7 +11,7 @@ export interface UpdateBookingStatusRequest {
 }
 
 const updateBookingStatusService = async (db: DrizzlePool,  req: UpdateBookingStatusRequest, allowedStatus: BookingStatus[] = ["pending", "confirmed", "cancelled"]) => {
-    console.log(`updateBookingstatus: ${JSON.stringify(req)}`);
+    Logger.info(`updateBookingstatus: ${JSON.stringify(req)}`);
 
     const {status, id} = req;
 

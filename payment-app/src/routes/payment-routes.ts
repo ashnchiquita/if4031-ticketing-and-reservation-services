@@ -7,6 +7,7 @@ import { createResponse } from '../utils/create-response';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import updateWebhook from '../utils/webhook';
+import enqueue from '../utils/queue';
 
 const controller = new InvoicesController();
 
@@ -38,7 +39,7 @@ export async function createInvoice(req: Request, res: Response) {
 
     return createResponse(res, StatusCodes.OK, ReasonPhrases.OK, data);
   } catch (err) {
-    console.error(err);
+    console.error('Error creating invoice: ', err);
     if (err instanceof ZodError) {
       return createResponse(res, StatusCodes.BAD_REQUEST, 'Invalid booking id.');
     }
@@ -76,18 +77,11 @@ export async function pay(req: Request, res: Response) {
     console.log('paymentStatus after random = ', paymentStatus);
     await controller.update(types.Uuid.fromString(body.bookingId), paymentStatus);
 
-    console.log('Start fetching webhook...');
-    const webhookRes = await updateWebhook(
-      body.bookingId,
-      paymentStatus,
-      `${paymentStatus.charAt(0).toUpperCase()}${paymentStatus.slice(1)}`,
-    );
-
-    if (!webhookRes.ok) {
-      // TODO: enqueue
-      console.log(webhookRes);
-      console.log('webhook failed');
-    }
+    const bookingId = body.bookingId;
+    const status = paymentStatus;
+    const message = `${paymentStatus.charAt(0).toUpperCase()}${paymentStatus.slice(1)}`;
+    // Enqueue job
+    enqueue({ bookingId, status, message });
 
     return paymentStatus === 'success'
       ? createResponse(res, StatusCodes.OK, 'Payment success.')

@@ -11,7 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "drizzle:generate": "drizzle-kit generate:pg",
     "drizzle:push": "drizzle-kit push:pg",
-    "drizzle:seed": "node --loader esbuild-register/loader -r esbuild-register ./dist/src/seed/index.js"
+    "drizzle:seed": "rm -rf ./dist && export NODE_ENV=production && npx tsc && node --loader esbuild-register/loader -r esbuild-register ./dist/src/seed/index.js"
   },
   "keywords": [],
   "author": "",
@@ -39,6 +39,7 @@
     "amqplib": "^0.10.3",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
+    "chalk": "^4.1.0",
     "dotenv": "^16.3.1",
     "drizzle-orm": "^0.29.0",
     "express": "^4.18.2",

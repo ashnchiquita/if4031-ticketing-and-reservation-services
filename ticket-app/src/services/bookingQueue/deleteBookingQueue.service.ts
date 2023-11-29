@@ -1,5 +1,6 @@
 import { DrizzlePool } from "@/common/types";
 import { bookingQueue } from "@/models";
+import { Logger } from "@/utils";
 import { eq } from "drizzle-orm";
 
 export interface DeleteBookingQueueRequest {
@@ -7,7 +8,7 @@ export interface DeleteBookingQueueRequest {
 }
 
 const deleteBookingQueueService = async (db: DrizzlePool, req: DeleteBookingQueueRequest) => {
-    console.log(`deleteBookingQueueService: ${JSON.stringify(req)}`)
+    Logger.info(`deleteBookingQueueService: ${JSON.stringify(req)}`)
 
     const { id } = req;
 

@@ -1,5 +1,6 @@
 import { DrizzlePool } from "@/common/types";
 import { bookings, seats } from "@/models";
+import { Logger } from "@/utils";
 import { eq } from "drizzle-orm";
 
 export interface GetSeatByIdRequest {
@@ -7,7 +8,7 @@ export interface GetSeatByIdRequest {
 }
 
 const getBookingByIdService = async (db: DrizzlePool,  req: GetSeatByIdRequest) => {
-    console.log(`getBookingByIdService: ${JSON.stringify(req)}`);
+    Logger.info(`getBookingByIdService: ${JSON.stringify(req)}`);
     const {id} = req;
     const res = await db.select({
         id: bookings.id,

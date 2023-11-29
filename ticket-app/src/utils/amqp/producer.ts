@@ -1,27 +1,28 @@
 import env from '@/config/env'
-import amqp, {Connection} from 'amqplib/callback_api'
+import amqp, { Connection } from 'amqplib/callback_api'
+import Logger from '../logger'
 
 const createMQProducer = (amqpUrl: string, queueName: string) => {
-  console.log('Connecting to RabbitMQ...')
+  Logger.info('Connecting to RabbitMQ...')
   let ch: any
   amqp.connect(amqpUrl, (errorConnect: Error, connection: Connection) => {
     if (errorConnect) {
-      console.log('Error connecting to RabbitMQ: ', errorConnect)
+      Logger.error('Error connecting to RabbitMQ: ', errorConnect)
       return
     }
 
     connection.createChannel((errorChannel, channel) => {
       if (errorChannel) {
-        console.log('Error creating channel: ', errorChannel)
+        Logger.error('Error creating channel: ', errorChannel)
         return
       }
 
       ch = channel
-      console.log('Connected to RabbitMQ')
+      Logger.info('Connected to RabbitMQ')
     })
   })
   return (msg: string) => {
-    console.log('Produce message to RabbitMQ...')
+    Logger.info(`Produce message to RabbitMQ... ${msg}`)
     ch.sendToQueue(queueName, Buffer.from(msg))
   }
 }

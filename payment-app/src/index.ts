@@ -5,6 +5,10 @@ import bodyParser from 'body-parser';
 import { auth } from './middleware/auth';
 import { create, del, get, update } from './routes/invoice-routes';
 import { createInvoice, pay } from './routes/payment-routes';
+import { createBullBoard } from '@bull-board/api';
+import { BullAdapter } from '@bull-board/api/bullAdapter';
+import { ExpressAdapter } from '@bull-board/express';
+import { webhookQueue } from './utils/queue';
 
 dotenv.config();
 
@@ -30,6 +34,17 @@ app.delete('/api/invoices/:booking_id', del);
 app.post('/api/payment', createInvoice);
 
 app.get('/payment', pay);
+
+// QUEUE GUI
+// TODO: comment
+const serverAdapter = new ExpressAdapter();
+serverAdapter.setBasePath('/admin/queues');
+
+const { addQueue, removeQueue, setQueues, replaceQueues } = createBullBoard({
+  queues: [new BullAdapter(webhookQueue)],
+  serverAdapter: serverAdapter,
+});
+app.use('/admin/queues', serverAdapter.getRouter());
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

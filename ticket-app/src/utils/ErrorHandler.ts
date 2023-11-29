@@ -3,6 +3,7 @@ import JsonResponse from "./JsonResponse";
 import HttpError, { HttpStatusCode } from "./HttpError";
 import { ZodError } from "zod";
 import { DrizzleError } from "drizzle-orm";
+import Logger from "./logger";
 
 abstract class ErrorHandler {
     protected nextHandler?: ErrorHandler;
@@ -19,8 +20,8 @@ abstract class ErrorHandler {
         } else if (this.nextHandler) {
             return this.nextHandler.handle(res, error);
         } else {
-            console.error(`ErrorHandler: ${JSON.stringify(error)}`)
-            console.error(error)
+            Logger.error(`ErrorHandler: ${JSON.stringify(error)}`)
+            Logger.error(error)
             return jsonResponse
                 .error(HttpStatusCode.InternalServerError)
                 .withMessage('Something went wrong while processing your request')
@@ -38,7 +39,7 @@ class HttpErrorHandler extends ErrorHandler {
     }
 
     protected getResponse(jsonResponse: JsonResponse, error: HttpError): Response {
-        console.error(`HttpError: ${error.statusCode} ${error.message}`)
+        Logger.error(`HttpError: ${error.statusCode} ${error.message}`)
         return jsonResponse
                 .error(error.statusCode)
                 .withData(error.data)
@@ -53,7 +54,7 @@ class ZodErrorHandler extends ErrorHandler {
     }
 
     protected getResponse(jsonResponse: JsonResponse, error: ZodError): Response {
-        console.error(`ZodError: ${error.issues[0].message}`)
+        Logger.error(`ZodError: ${error.issues[0].message}`)
         return jsonResponse.error(HttpStatusCode.BadRequest)
                 .withMessage(error.issues[0].message)
                 .make();
@@ -66,7 +67,7 @@ class DrizzleErrorHandler extends ErrorHandler {
     }
 
     protected getResponse(jsonResponse: JsonResponse, error: DrizzleError): Response {
-        console.error(`DrizzleError: ${error.message}`)
+        Logger.error(`DrizzleError: ${error.message}`)
         return jsonResponse.error(HttpStatusCode.BadRequest)
                 .withMessage(error.message)
                 .make();

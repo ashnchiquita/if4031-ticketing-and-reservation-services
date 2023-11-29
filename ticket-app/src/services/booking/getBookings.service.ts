@@ -1,5 +1,6 @@
 import { DrizzlePool } from "@/common/types";
 import { bookings } from "@/models";
+import { Logger } from "@/utils";
 import { and, eq } from "drizzle-orm";
 import { PgSelect } from "drizzle-orm/pg-core";
 
@@ -29,7 +30,7 @@ function withFilter<T extends PgSelect>(qb: T, status?: "pending" | "confirmed" 
 }
 
 const getBookingsService = async (db: DrizzlePool, req: GetBookingsRequest) => {
-    console.log(`getBookingsService: ${JSON.stringify(req)}`);
+    Logger.info(`getBookingsService: ${JSON.stringify(req)}`);
     const pageSize = req.pageSize ? parseInt(req.pageSize) : 25;
     const userId = req.userId
     const seatId = req.seatId

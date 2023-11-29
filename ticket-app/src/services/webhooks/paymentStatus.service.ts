@@ -4,7 +4,7 @@ import {eq} from 'drizzle-orm'
 import {seats} from '@/models'
 import {generatePaymentStatusPDF} from '@/utils/pdfgenerator'
 import {DrizzlePool} from '@/common/types'
-import {upload} from '@/utils'
+import {Logger, upload} from '@/utils'
 
 export interface PaymentStatusRequest {
   bookingId: string
@@ -14,7 +14,7 @@ export interface PaymentStatusRequest {
 
 const paymentStatusService = async (db: DrizzlePool, req: PaymentStatusRequest) => {
   const {bookingId, status, message} = req
-  console.log(`paymentStatusService: ${JSON.stringify(req)}`)
+  Logger.info(`paymentStatusService: ${JSON.stringify(req)}`)
 
   return await db.transaction(async (trx) => {
     const booking = await updateBookingStatusService(
@@ -51,15 +51,15 @@ const paymentStatusService = async (db: DrizzlePool, req: PaymentStatusRequest) 
       message: message,
     }
 
-    console.log(`paymentStatusService: generate PDF...`)
+    Logger.info(`paymentStatusService: generate PDF...`)
     const blob = await generatePaymentStatusPDF(bookingDetail)
 
     // Upload to S3 and get the url
-    console.log(`paymentStatusService: Uploading PDF...`)
+    Logger.info(`paymentStatusService: Uploading PDF...`)
     const url = await upload(`${bookingId}.pdf`, blob)
-    console.log(url)
+    Logger.info(`URL: ${url}`)
 
-    console.log(`paymentStatusService: sending message to client's message queue.`)
+    Logger.info(`paymentStatusService: sending message to client's message queue.`)
     const msg = {
         bookingId: bookingId,
         status: status,

@@ -81,14 +81,6 @@ const envSchema = z.object({
       message: 'CLIENT_QUEUE_NAME must be at least 1 character long.',
     })
     .max(255),
-  WEBHOOK_SHARED_SECRET: z
-    .string({
-      required_error: 'WEBHOOK_SHARED_SECRET is required.',
-    })
-    .min(32, {
-      message: 'WEBHOOK_SHARED_SECRET must be at least 32 character long.',
-    })
-    .max(255),
   AWS_ACCESS_KEY: z
     .string({
       required_error: 'AWS_ACCESS_KEY is required.',

@@ -1,5 +1,6 @@
 import { DrizzlePool } from "@/common/types";
 import { seats } from "@/models";
+import { Logger } from "@/utils";
 import { DrizzleError } from "drizzle-orm";
 
 export interface createSeatRequestSchema {
@@ -8,7 +9,7 @@ export interface createSeatRequestSchema {
 }
 
 const createSeatService = async (db: DrizzlePool, req: createSeatRequestSchema) => {
-    console.log(`createSeat: creating seat with event id ${req.eventId} and number ${req.number}.`);
+    Logger.info(`createSeat: creating seat with event id ${req.eventId} and number ${req.number}.`);
 
     const { eventId, number } = req;
 
@@ -29,8 +30,7 @@ const createSeatService = async (db: DrizzlePool, req: createSeatRequestSchema) 
         const event = res[0];
         return event;
     } catch (err) {
-        console.log("createSeat: error inserting seat into database.");
-        console.log(err);
+        Logger.error("createSeat: error inserting seat into database.");
         if (err instanceof Error) {
             if (err.message === 'duplicate key value violates unique constraint "seats_event_id_number_unique"') {
                 throw new DrizzleError({

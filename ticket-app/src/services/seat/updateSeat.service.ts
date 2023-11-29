@@ -1,5 +1,6 @@
 import { DrizzlePool } from "@/common/types";
 import { seats } from "@/models";
+import { Logger } from "@/utils";
 import { DrizzleError, eq } from "drizzle-orm";
 
 export interface UpdateSeatRequest { 
@@ -10,7 +11,7 @@ export interface UpdateSeatRequest {
 }
 
 const updateEventService = async (db: DrizzlePool, req: UpdateSeatRequest) => {
-    console.log(`updateEvent: updating event with id ${req.id} and payload ${JSON.stringify(req)}`);
+    Logger.info(`updateEvent: updating event with id ${req.id} and payload ${JSON.stringify(req)}`);
 
     const {id, number, status , eventId} = req;
 
@@ -31,8 +32,7 @@ const updateEventService = async (db: DrizzlePool, req: UpdateSeatRequest) => {
       const event = res[0];
       return event;
     } catch (err) {
-      console.log("updateEvent: error updating event in database.");
-      console.log(err);
+      Logger.error("updateEvent: error updating event in database.");
 
       if (err instanceof Error) {
         if (err.message === 'duplicate key value violates unique constraint "seats_event_id_number_unique"') {

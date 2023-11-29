@@ -12,5 +12,6 @@ router.use('/seat', authenticateClientAPIKey, seatRouter)
 router.use('/booking', authenticateClientAPIKey, bookingRouter)
 router.use('/webhook', authenticatePaymentAPIKey, webhookRouter)
 router.use('/booking-queue', authenticateClientAPIKey, bookingQueueRouter)
+router.use('/health', (_, res) => res.status(200).send('OK'))
 
 export default router

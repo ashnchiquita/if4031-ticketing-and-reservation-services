@@ -2,13 +2,14 @@ import { bookings } from "@/models";
 import { eq } from "drizzle-orm";
 import { updateSeatStatusService } from "../seat";
 import { DrizzlePool } from "@/common/types";
+import { Logger } from "@/utils";
 
 export interface DeleteBookingRequest {
     id: string;
 }
 
 const deleteBookingService = async (db: DrizzlePool, req: DeleteBookingRequest) => {
-    console.log(`deleteBookingService: ${JSON.stringify(req)}`);
+    Logger.info(`deleteBookingService: ${JSON.stringify(req)}`);
     const {id} = req;
     const res = await db.transaction(async (trx) => {
         const res = await trx.delete(bookings).where(eq(bookings.id, id))
