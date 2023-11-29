@@ -1,5 +1,6 @@
 import { DrizzlePool } from "@/common/types";
 import { events } from "@/models";
+import { Logger } from "@/utils";
 import { eq } from "drizzle-orm";
 
 export interface DeleteEventRequest {
@@ -7,7 +8,7 @@ export interface DeleteEventRequest {
 }
 
 const deleteEventService = async (db: DrizzlePool, req: DeleteEventRequest) => {
-    console.log(`deleteEventService: ${JSON.stringify(req)}`);
+    Logger.info(`deleteEventService: ${JSON.stringify(req)}`);
     const {id} = req;
     const res = await db.delete(events).where(eq(events.id, id))
                 .returning({

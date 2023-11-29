@@ -1,5 +1,6 @@
 import { DrizzlePool } from "@/common/types";
 import { events } from "@/models";
+import { Logger } from "@/utils";
 import { eq } from "drizzle-orm";
 
 export interface UpdateEventRequest { 
@@ -8,7 +9,7 @@ export interface UpdateEventRequest {
 }
 
 const updateEventService = async (db: DrizzlePool, req: UpdateEventRequest) => {
-    console.log(`updateEvent: updating event with id ${req.id} and title ${req.title}.`);
+    Logger.info(`updateEvent: updating event with id ${req.id} and title ${req.title}.`);
 
     const {title, id} = req;
 

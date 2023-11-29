@@ -1,5 +1,6 @@
 import {jsPDF} from 'jspdf'
 import generateQR from '../qrcode'
+import Logger from '../logger'
 
 const generatePaymentStatusPDF = async (bookingDetail: {
   seat:
@@ -27,14 +28,14 @@ const generatePaymentStatusPDF = async (bookingDetail: {
   doc.text(`Message: ${bookingDetail.message}`, 10, 50)
 
   if (bookingDetail.status === 'confirmed') {
-    console.log(`paymentStatusService: generate QR Code...`)
+    Logger.info(`paymentStatusService: generate QR Code...`)
     const qrCode = await generateQR(bookingDetail.id)
 
     if (!qrCode) {
       throw new Error(`paymentStatusService: QR Code generation failed.`)
     }
 
-    console.log(`paymentStatusService: QR Code generated.`)
+    Logger.info(`paymentStatusService: QR Code generated.`)
     doc.addImage(qrCode, 'PNG', 10, 60, 50, 50)
   }
 

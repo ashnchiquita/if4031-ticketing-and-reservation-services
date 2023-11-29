@@ -1,5 +1,6 @@
 import { DrizzlePool } from "@/common/types";
 import { events } from "@/models";
+import { Logger } from "@/utils";
 import { eq } from "drizzle-orm";
 
 export interface GetEventByIdRequest {
@@ -7,7 +8,7 @@ export interface GetEventByIdRequest {
 }
 
 const getEventByIdService = async (db: DrizzlePool, req: GetEventByIdRequest) => {
-    console.log(`getEventByIdService: ${JSON.stringify(req)}`);
+    Logger.info(`getEventByIdService: ${JSON.stringify(req)}`);
     const res = await db.select({
         title: events.title,
         id: events.id,

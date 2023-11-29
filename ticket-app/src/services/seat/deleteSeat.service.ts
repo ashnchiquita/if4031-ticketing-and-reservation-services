@@ -1,5 +1,6 @@
 import { DrizzlePool } from "@/common/types";
 import { seats } from "@/models";
+import { Logger } from "@/utils";
 import { eq } from "drizzle-orm";
 
 export interface DeleteSeatRequest {
@@ -7,7 +8,7 @@ export interface DeleteSeatRequest {
 }
 
 const deleteSeatService = async (db: DrizzlePool, req: DeleteSeatRequest) => {
-    console.log(`deleteSeatService: ${JSON.stringify(req)}`);
+    Logger.info(`deleteSeatService: ${JSON.stringify(req)}`);
     const {id} = req;
     const res = await db.delete(seats).where(eq(seats.id, id))
     .returning({

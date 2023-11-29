@@ -1,12 +1,12 @@
 import env from "@/config/env";
-import { HttpError } from "@/utils";
+import { HttpError, Logger } from "@/utils";
 
 export interface CreatePaymentRequest {
     bookingId: string;
 }
 
 const createPaymentService = async (req: CreatePaymentRequest) => {
-    console.log(`[INFO] Calling payment service for ${req.bookingId}`)
+    Logger.info(`Calling payment service for ${req.bookingId}`)
     const res = await fetch(`${env.PAYMENT_APP_URL}/payment`, {
         method: 'POST',
         body: JSON.stringify({
@@ -25,7 +25,7 @@ const createPaymentService = async (req: CreatePaymentRequest) => {
 
     const resData = await res.json();
 
-    console.log("[INFO] Payment service response: ", resData);
+    Logger.info("Payment service response: ", resData);
     
     return resData;
 }

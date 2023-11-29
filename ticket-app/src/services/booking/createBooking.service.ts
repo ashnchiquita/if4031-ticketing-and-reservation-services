@@ -1,7 +1,7 @@
 import { bookings, seats } from "@/models";
 import { DrizzleError, and, eq, not } from "drizzle-orm";
 import { createBookingQueueService } from "../bookingQueue";
-import { HttpError } from "@/utils";
+import { HttpError, Logger } from "@/utils";
 import { DrizzlePool } from "@/common/types";
 import createPaymentService from "../payment/createPayment.service";
 
@@ -23,12 +23,12 @@ const simulateExternalCall  = async () => {
             } else {
                 resolve('External call successful.');
             }
-        }, 2000);
+        }, 1000);
     });
 }
 
 const createBookingService = async (db: DrizzlePool, req: createBookingServiceSchema) => {
-    console.log(`createBooking: ${JSON.stringify(req)}`);
+    Logger.info(`createBooking: ${JSON.stringify(req)}`);
 
     const { seatId, userId } = req;
 
@@ -50,7 +50,7 @@ const createBookingService = async (db: DrizzlePool, req: createBookingServiceSc
                 } else if (existingBooking.status === "pending") {
                     if (existingBooking.user_id === userId) {
                         throw new DrizzleError({
-                            message: `Seat with id ${seatId} is already booked by you.`,
+                            message: `Seat with id ${seatId} is already booked by the same user.`,
                         });
                     }
                     // Insert into queue
@@ -89,7 +89,7 @@ const createBookingService = async (db: DrizzlePool, req: createBookingServiceSc
             }
         })
 
-        console.log(`[INFO] Booking created: ${JSON.stringify(booking)}`);
+        Logger.info(`Booking created: ${JSON.stringify(booking)}`);
 
         if (!booking) {
             return null;

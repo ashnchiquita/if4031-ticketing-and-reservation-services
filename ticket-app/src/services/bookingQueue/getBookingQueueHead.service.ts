@@ -1,6 +1,7 @@
 import { DrizzlePool } from "@/common/types";
 import db from "@/database/drizzle";
 import { bookingQueue } from "@/models/bookingQueue.model";
+import { Logger } from "@/utils";
 import { asc, eq } from "drizzle-orm";
 
 export interface GetBookingQueueHeadRequest {
@@ -8,7 +9,7 @@ export interface GetBookingQueueHeadRequest {
 }
 
 const getBookingQueueHeadService = async (db: DrizzlePool, req: GetBookingQueueHeadRequest) => {
-    console.log(`getBookingQueueHeadService: ${JSON.stringify(req)}`)
+    Logger.info(`getBookingQueueHeadService: ${JSON.stringify(req)}`)
 
     const { seatId } = req;
 

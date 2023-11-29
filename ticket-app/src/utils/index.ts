@@ -3,5 +3,5 @@ import JsonResponse from './JsonResponse'
 import errorHandlerChain from './ErrorHandler'
 import HttpError from './HttpError'
 import upload from './s3Uploader'
-
-export {tryCatchWrapper, JsonResponse, errorHandlerChain, HttpError, upload}
+import Logger from './logger'
+export {tryCatchWrapper, JsonResponse, errorHandlerChain, HttpError, upload, Logger}

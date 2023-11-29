@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { HttpError, errorHandlerChain } from "../utils";
+import { HttpError, Logger, errorHandlerChain } from "../utils";
 import bcrypt from 'bcrypt';
 import env from "@/config/env";
 
 const authenticateAPIKey = (extApiKey: string) => async  (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log('Authenticating token');
+    Logger.info('Authenticating token');
     const apiKey = req.headers['api-key'] as string
     
     if (apiKey == null) {
@@ -17,7 +17,7 @@ const authenticateAPIKey = (extApiKey: string) => async  (req: Request, res: Res
       throw new HttpError(401, 'Invalid API key');
     }
 
-    console.log('Valid API key');
+    Logger.info('Valid API key');
     next();
   } catch (error) {
     errorHandlerChain.handle(res, error);
