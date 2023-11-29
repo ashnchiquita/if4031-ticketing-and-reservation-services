@@ -1,24 +1,44 @@
 import { bookings, seats } from "@/models";
 import { DrizzleError, and, eq, not } from "drizzle-orm";
 import { createBookingQueueService } from "../bookingQueue";
-import { HttpError, Logger } from "@/utils";
+import { HttpError, Logger, upload } from "@/utils";
 import { DrizzlePool } from "@/common/types";
 import createPaymentService from "../payment/createPayment.service";
+import { generatePaymentStatusPDF } from "@/utils/pdfgenerator";
 
 export interface createBookingServiceSchema {
     seatId: string;
     userId: string;
 }
 
-const simulateExternalCall  = async () => {
+const simulateExternalCall  = async (seatId: string, userId: string) => {
     return new Promise((resolve, reject) => {
         const shouldFail = Math.random() <= 0.2;
 
-        setTimeout(() => {
+        setTimeout(async () => {
             if (shouldFail) {
+                Logger.info(`externalCallFailure: generate PDF...`)
+                const blob = await generatePaymentStatusPDF({
+                    id: '-',
+                    message: 'External call failed.',
+                    seat_id: seatId,
+                    status: "cancelled",
+                    user_id: userId,
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                })
+
+                // Upload to S3 and get the url
+                Logger.info(`externalCallFailure: Uploading PDF...`)
+                const url = await upload(`failure-${seatId}-${userId}-${(new Date()).toISOString()}.pdf`, blob)
+                Logger.info(`URL: ${url}`)
                 reject(new HttpError(
                     500,
-                    'Failed to create booking. Please try again later.',
+                    'External call failed. Please try again later.',
+                    {
+                        reason: "External call failed.",
+                        pdfUrl: url,
+                    }
                 ));
             } else {
                 resolve('External call successful.');
@@ -34,7 +54,7 @@ const createBookingService = async (db: DrizzlePool, req: createBookingServiceSc
 
     try {
         // Simulate external call
-        await simulateExternalCall();
+        await simulateExternalCall(seatId, userId);
         
         const booking = await db.transaction(async (trx) => {
             // Check if booking exists

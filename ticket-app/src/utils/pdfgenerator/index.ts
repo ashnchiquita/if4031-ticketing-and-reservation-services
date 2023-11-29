@@ -3,7 +3,7 @@ import generateQR from '../qrcode'
 import Logger from '../logger'
 
 const generatePaymentStatusPDF = async (bookingDetail: {
-  seat:
+  seat?:
     | {
         number: number
         event_id: string
