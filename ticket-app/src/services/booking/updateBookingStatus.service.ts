@@ -44,7 +44,6 @@ const updateBookingStatusService = async (db: DrizzlePool,  req: UpdateBookingSt
         await trx.delete(bookingQueue)
           .where(eq(bookingQueue.seat_id, booking.seat_id))
       } else if (status === "cancelled") {
-        //TODO! Process Queue
         const nextBooking = await getBookingQueueHeadService(trx, { seatId: booking.seat_id });
         if (nextBooking) {
           const res = await trx.insert(bookings).values({
@@ -53,11 +52,11 @@ const updateBookingStatusService = async (db: DrizzlePool,  req: UpdateBookingSt
             status: "pending",
           }).returning({
             id: bookings.id})
-
-          // Create payment
-          const payment = await createPaymentService({bookingId: res[0].id})
-          
-          // TODO! Send to client queue?
+            
+            // Create payment
+            const payment = await createPaymentService({bookingId: res[0].id})
+            
+            // TODO! Send to client queue?
         } else {
           await trx.update(seats).set({
             status: "open",

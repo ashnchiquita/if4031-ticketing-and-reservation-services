@@ -62,6 +62,7 @@ const paymentStatusService = async (db: DrizzlePool, req: PaymentStatusRequest) 
     Logger.info(`paymentStatusService: sending message to client's message queue.`)
     const msg = {
         bookingId: bookingId,
+        userId: booking.user_id,
         status: status,
         message: message,
         pdfUrl: url

@@ -69,8 +69,8 @@ export async function pay(req: Request, res: Response) {
     }
 
     let paymentStatus = 'success';
-    // Simulate 20% failure rate if token verified
-    if (Math.floor(Math.random() * 5) === 1) {
+    // Simulate 10% failure rate if token verified
+    if (Math.floor(Math.random() * 10) === 1) {
       paymentStatus = 'failed';
     }
 

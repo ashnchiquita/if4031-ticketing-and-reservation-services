@@ -1,4 +1,4 @@
-import { pgTable, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { index, pgTable, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 import { seats } from "./seats.model";
 
 export const bookingQueue = pgTable('booking_queue', {
@@ -9,4 +9,5 @@ export const bookingQueue = pgTable('booking_queue', {
     updated_at: timestamp('updated_at').defaultNow().notNull(),
 }, (t) => ({
     unq: unique().on(t.seat_id, t.user_id),
+    seatIdIdx: index("seat_id_idx").on(t.seat_id),
 }))

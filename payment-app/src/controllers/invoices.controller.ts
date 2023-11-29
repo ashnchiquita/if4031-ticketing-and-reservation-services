@@ -26,7 +26,6 @@ export class InvoicesController {
   }
 
   public async create(bookingId: types.Uuid, status: string = 'pending') {
-    console.log(status);
     const mapper = await DB.getInvoicesMapper();
     return await mapper.insert({ bookingId: bookingId, status: encodeStatus(status) });
   }

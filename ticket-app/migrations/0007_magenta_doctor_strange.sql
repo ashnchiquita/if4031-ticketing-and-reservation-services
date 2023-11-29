@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS "seat_id_idx" ON "booking_queue" ("seat_id");

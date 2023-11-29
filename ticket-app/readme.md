@@ -2,75 +2,28 @@
 
 ## API Docs
 
-Dokumentasi ini tidak strict, silahkan ubah sesuai yang diinginkan, yang penting ada terdokumentasi interface dari masing2 app
-
 ### HTTP APIs
 
-#### 0. /api/v1
-
-| HTTP Method | Endpoint   | Description              |
-| ----------- | ---------- | ------------------------ |
-| GET         | /health    | Get service health check |
-
-#### 1. /api/v1/booking
-
-| HTTP Method | Endpoint       | Description             |
-| ----------- | -------------- | ----------------------- |
-| GET         | /              | Get all bookings        |
-| GET         | /:id           | Get booking by ID       |
-| POST        | /              | Create a new booking    |
-| PATCH       | /:id/status    | Update booking status   |
-| DELETE      | /:id           | Delete booking by ID    |
-
-#### 2. /api/v1/booking-queue
-
-| HTTP Method | Endpoint       | Description                  |
-| ----------- | -------------- | ---------------------------- |
-| GET         | /              | Get booking queue            |
-| DELETE      | /:id           | Delete booking from queue by ID |
-
-#### 3. /api/v1/event
-
-| HTTP Method | Endpoint       | Description             |
-| ----------- | -------------- | ----------------------- |
-| GET         | /              | Get all events          |
-| GET         | /:id           | Get event by ID         |
-| POST        | /              | Create a new event      |
-| PUT         | /:id           | Update event by ID      |
-| DELETE      | /:id           | Delete event by ID      |
-
-#### 4. /api/v1/seat
-
-| HTTP Method | Endpoint       | Description               |
-| ----------- | -------------- | ------------------------- |
-| GET         | /              | Get all seats             |
-| GET         | /:id           | Get seat by ID            |
-| POST        | /              | Create a new seat         |
-| PATCH       | /:id/status    | Update seat status by ID  |
-| DELETE      | /:id           | Delete seat by ID         |
-
-#### 5. /api/v1/webhook
-
-| HTTP Method | Endpoint               | Description                       |
-| ----------- | ---------------------- | --------------------------------- |
-| POST        | /payment-status        | Receive payment status webhook    |
-
+| HTTP Method | Endpoint                         | Description                              |
+| ----------- | -------------------------------- | ---------------------------------------- |
+| GET         | `/event`                         | Get events                               |
+| GET         | `/event/:eventId`                | Get event by event id                    |
+| POST        | `/event`                         | Create event                             |
+| PUT         | `/event/:eventId`                | Edit event by event id                   |
+| DELETE      | `/event/:eventId`                | Delete event by event id                 |
+| GET         | `/seat`                          | Get seats                                |
+| GET         | `/seat/:seatId`                  | Get seat by seat id                      |
+| POST        | `/seat`                          | Create seat                              |
+| PATCH       | `/seat/:seatId`                  | Edit seat status by seat id              |
+| DELETE      | `/seat/:seatId`                  | Delete seat by seat id                   |
+| GET         | `/booking`                       | Get bookings                             |
+| GET         | `/booking/:bookingId`            | Get booking by booking id                |
+| POST        | `/booking`                       | Create booking                           |
+| PATCH       | `/booking/:bookingId`            | Edit booking status by booking id        |
+| DELETE      | `/booking/:bookingId`            | Delete booking by booking id             |
+| GET         | `/booking-queue`                 | Get booking queue by booking queue id    |
+| DELETE      | `/booking-queue/:bookingQueueId` | Delete booking queue by booking queue id |
 
 ## How To Start
 
-Step by step to run a single service:
-
-NOTE: this service has interactions with other services, we recommend for ease of use to run the entire app 
-
-1. Ensure port 5435, 8002 is not used and exposed
-2. Copy and rename .env.example to .env
-3. Run `docker-compose -f docker-compose.yml up`
-4. Hit http://localhost:8002/health and see if it returns properly
-
-
-## How To Start The Entire App
-
-Step by step to run the entire application
-
-1. Navigate to config folder outside of this folder
-2. Follow the step on the README.md file
+1. Follow instruction to run all container [here](../readme.md).
