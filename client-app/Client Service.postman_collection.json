@@ -1,11 +1,131 @@
 {
-	"info": {
-		"_postman_id": "c745b035-71fc-43fc-85ad-c91485b1b423",
-		"name": "Client Service",
-		"description": "Documentation for client service. Please utilize collection variables to make your life easier.",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "29903624",
-		"_collection_link": "https://lunar-station-394524.postman.co/workspace/APKS~5aae23c6-6220-492b-80df-d5581b595946/collection/29903624-c745b035-71fc-43fc-85ad-c91485b1b423?action=share&source=collection_link&creator=29903624"
-	},
-	"item": []
+  "info": {
+    "_postman_id": "b209e77e-edaf-4587-9205-904e3c51ec30",
+    "name": "Client Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "31442324",
+    "_collection_link": "https://if4031-paten.postman.co/workspace/Team-Workspace~25fe7192-677a-483b-86e3-9165eccc80b7/collection/31395192-b209e77e-edaf-4587-9205-904e3c51ec30?action=share&source=collection_link&creator=31442324"
+  },
+  "item": [
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"test\",\n    \"password\": \"password\",\n    \"email\": \"test@gmail.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{CLIENT_URL}}/user",
+              "host": ["{{CLIENT_URL}}"],
+              "path": ["user"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"test2\",\n    \"email\": \"test_@gmail.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{CLIENT_URL}}/user/:userId",
+              "host": ["{{CLIENT_URL}}"],
+              "path": ["user", ":userId"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "cdee8fc0-84bd-4322-91fd-d4dc39b4bc22"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{CLIENT_URL}}/user/:userId",
+              "host": ["{{CLIENT_URL}}"],
+              "path": ["user", ":userId"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "d4b96c0d-4b88-4f14-8147-7b2c7c21f991"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{CLIENT_URL}}/user/:userId",
+              "host": ["{{CLIENT_URL}}"],
+              "path": ["user", ":userId"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "cdee8fc0-84bd-4322-91fd-d4dc39b4bc22"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Booking",
+      "item": [
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"seatId\": \"f53595e0-2da5-4186-8019-882fc69b86bc\",\n    \"userId\": \"d4b96c0d-4b88-4f14-8147-7b2c7c21f991\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{CLIENT_URL}}/booking",
+              "host": ["{{CLIENT_URL}}"],
+              "path": ["booking"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
 }
