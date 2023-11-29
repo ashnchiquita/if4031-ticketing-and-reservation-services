@@ -11,9 +11,9 @@ import (
 var dialerInstance *gomail.Dialer
 
 func initialize() {
-	smtpHost := os.Getenv("SMTP_USER")
-	user := os.Getenv("SMTP_PASS")
-	pass := os.Getenv("SMTP_HOST")
+	user := os.Getenv("SMTP_USER")
+	pass := os.Getenv("SMTP_PASSWORD")
+	smtpHost := os.Getenv("SMTP_HOST")
 	smtpPort, err := strconv.ParseInt(os.Getenv("SMTP_PORT"), 10, 32)
 	if err != nil {
 		panic(err)

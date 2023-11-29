@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/lib"
+	mailsender "github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/mail-sender"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/models"
 	"github.com/ashnchiquita/if4031-ticketing-and-reservation-services/internal/singletons/database"
 )
@@ -18,12 +19,17 @@ type CreateBookingRequest struct {
 
 type TicketBookingResponse struct {
 	Message string `json:"message"`
+	Data    struct {
+		PaymentURL string `json:"paymentUrl"`
+		PdfURL     string `json:"pdfUrl"`
+	} `json:"data"`
 }
 
 func CreateBooking(w http.ResponseWriter, r *http.Request) {
 	var (
 		bookingReq CreateBookingRequest
 		ticketRes  TicketBookingResponse
+		user       models.User
 	)
 
 	json.NewDecoder(r.Body).Decode(&bookingReq)
@@ -43,7 +49,7 @@ func CreateBooking(w http.ResponseWriter, r *http.Request) {
 
 	// Check if the user id is valid
 	db := database.GetInstance()
-	result := db.First(&models.User{}, "id = ?", bookingReq.UserId)
+	result := db.First(&user, "id = ?", bookingReq.UserId)
 
 	if result.Error != nil {
 		log.Println(result.Error.Error())
@@ -76,6 +82,7 @@ func CreateBooking(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("api-key", "LSSczkB2q7AdswtHVIlJGnezySoJKjRnb8GkPod2uF5u4L8tlWmQgSqtx56RKPhO")
 
 	res, err := (&http.Client{}).Do(req)
 	if err != nil {
@@ -102,18 +109,13 @@ func CreateBooking(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(msg)
 
-	} else if ticketRes.Message == "Error" {
-		// Save the failed booking data
-		db := database.GetInstance()
-		result := db.Create(&models.BookingHistory{
-			UserID: bookingReq.UserId,
-			Status: false,
-		})
+	} else if ticketRes.Message == "External call failed. Please try again later." {
+		// Send email if booking failed
+		err = mailsender.SendFailedMail(user.Email, ticketRes.Data.PdfURL)
 
-		// Check if the booking is successfully saved
-		if result.Error != nil {
+		if err != nil {
 			msg := lib.ResponseMessage{
-				Message: result.Error.Error(),
+				Message: err.Error(),
 			}
 
 			w.Header().Set("Content-Type", "application/json")
@@ -123,13 +125,12 @@ func CreateBooking(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// ! Masih bingung ini status code yg cocok apa
 		msg := lib.ResponseMessage{
 			Message: ticketRes.Message,
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(msg)
 
 	} else {
