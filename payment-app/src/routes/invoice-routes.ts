@@ -11,7 +11,14 @@ const controller = new InvoicesController();
 export async function create(req: Request, res: Response) {
   try {
     const body = UUID.parse(req.body);
+
+    const prev = await controller.get(types.Uuid.fromString(body.bookingId));
+    if (prev) {
+      return createResponse(res, StatusCodes.BAD_REQUEST, 'An invoice with booking id already exists');
+    }
+
     await controller.create(types.Uuid.fromString(body.bookingId));
+
     const data = await controller.get(types.Uuid.fromString(body.bookingId));
     return createResponse(res, StatusCodes.OK, ReasonPhrases.OK, data);
   } catch (err) {
@@ -27,7 +34,9 @@ export async function update(req: Request, res: Response) {
     const params = UUID.parse({ bookingId: req.params.booking_id });
     const body = Status.parse(req.body);
     await controller.update(types.Uuid.fromString(params.bookingId), body.status);
-    return createResponse(res, StatusCodes.OK, ReasonPhrases.OK);
+
+    const data = await controller.get(types.Uuid.fromString(params.bookingId));
+    return createResponse(res, StatusCodes.OK, ReasonPhrases.OK, data);
   } catch (err) {
     if (err instanceof ZodError) {
       return createResponse(res, StatusCodes.BAD_REQUEST, 'Invalid booking id or status.');

@@ -4,5 +4,5 @@ export function createResponse(res: Response, status: number, message: string, d
   const statusBoolean = status >= 200 && status < 300;
   data
     ? res.status(status).json({ status: statusBoolean, message: message, data: data })
-    : res.status(status).json({ status: statusBoolean, message: message });
+    : res.status(status).json({ status: statusBoolean, message: message, data: null });
 }

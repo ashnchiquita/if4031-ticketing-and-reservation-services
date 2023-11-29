@@ -36,7 +36,7 @@ services:
       interval: 30s
       timeout: 60s
       retries: 5
-      start_period: 80s  
+      start_period: 80s
     networks:
       - app-network
   ticket_app:
@@ -61,6 +61,24 @@ services:
     extends:
       file: ../client-app/docker-compose.yaml
       service: client_app_db
+    networks:
+      - app-network
+  payment_app:
+    extends:
+      file: ../payment-app/docker-compose.yml
+      service: payment_app
+    networks:
+      - app-network
+  payment_app_db:
+    extends:
+      file: ../payment-app/docker-compose.yml
+      service: payment_app_db
+    networks:
+      - app-network
+  payment_app_queue:
+    extends:
+      file: ../payment-app/docker-compose.yml
+      service: payment_app_queue
     networks:
       - app-network
 networks:
