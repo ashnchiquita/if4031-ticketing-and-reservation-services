@@ -73,14 +73,6 @@ const envSchema = z.object({
       message: 'RABBITMQ_URL must be at least 1 character long.',
     })
     .max(255),
-  CLIENT_QUEUE_NAME: z
-    .string({
-      required_error: 'CLIENT_QUEUE_NAME is required.',
-    })
-    .min(1, {
-      message: 'CLIENT_QUEUE_NAME must be at least 1 character long.',
-    })
-    .max(255),
   AWS_ACCESS_KEY: z
     .string({
       required_error: 'AWS_ACCESS_KEY is required.',

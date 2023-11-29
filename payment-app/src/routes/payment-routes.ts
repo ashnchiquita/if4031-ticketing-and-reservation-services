@@ -16,6 +16,7 @@ export async function createInvoice(req: Request, res: Response) {
   // return id + payment url
   // called synchronously
   try {
+    console.log(`createInvoice: Checking booking`);
     const body = UUID.parse(req.body);
 
     const prev = await controller.get(types.Uuid.fromString(body.bookingId));
@@ -23,12 +24,14 @@ export async function createInvoice(req: Request, res: Response) {
       return createResponse(res, StatusCodes.BAD_REQUEST, 'An invoice with booking id already exists');
     }
 
+    console.log(`createInvoice: Creating invoice...`);
     await controller.create(types.Uuid.fromString(body.bookingId));
 
     const invoice = await controller.get(types.Uuid.fromString(body.bookingId));
 
     if (!invoice) throw new Error();
 
+    console.log(`createInvoice: Creating payment URL...`);
     // generate jwt token
     const token = jwt.sign(invoice, process.env.JWT_SECRET as string);
 
@@ -36,10 +39,11 @@ export async function createInvoice(req: Request, res: Response) {
       invoice: invoice,
       paymentUrl: `http://${process.env.PAYMENT_SERVICE_HOST}:${process.env.PAYMENT_SERVICE_PORT}/payment?token=${token}`,
     };
+    console.log(`createInvoice: returned ${data}`);
 
     return createResponse(res, StatusCodes.OK, ReasonPhrases.OK, data);
   } catch (err) {
-    console.error('Error creating invoice: ', err);
+    console.error('createInvoice: Error creating invoice: ', err);
     if (err instanceof ZodError) {
       return createResponse(res, StatusCodes.BAD_REQUEST, 'Invalid booking id.');
     }
@@ -52,6 +56,7 @@ export async function pay(req: Request, res: Response) {
   // Result determined from the first click (first GET request)
   try {
     // Get booking id from token
+    console.log(`pay: Validating token...`);
     const token = req.query.token as string;
     if (!token) {
       return createResponse(res, StatusCodes.BAD_REQUEST, 'No token provided.');
@@ -62,32 +67,35 @@ export async function pay(req: Request, res: Response) {
     const body = UUID.parse({ bookingId: payload.bookingId });
 
     // Check if link has been clicked before
+    console.log(`pay: Validating payment status...`);
     const data = await controller.get(types.Uuid.fromString(body.bookingId));
     if (data.status !== 'pending') {
-      console.log('Link already clicked');
+      console.log('pay: Link already clicked');
       return createResponse(res, StatusCodes.BAD_REQUEST, 'Payment already performed.');
     }
 
     let paymentStatus = 'success';
     // Simulate 10% failure rate if token verified
     if (Math.floor(Math.random() * 10) === 1) {
+      console.log('pay: Payment simulation failed');
       paymentStatus = 'failed';
     }
 
-    console.log('paymentStatus after random = ', paymentStatus);
+    console.log('pay: paymentStatus after random = ', paymentStatus);
     await controller.update(types.Uuid.fromString(body.bookingId), paymentStatus);
 
     const bookingId = body.bookingId;
     const status = paymentStatus;
     const message = `${paymentStatus.charAt(0).toUpperCase()}${paymentStatus.slice(1)}`;
     // Enqueue job
+    console.log('pay: Enqueuing webhook as job...');
     enqueue({ bookingId, status, message });
 
     return paymentStatus === 'success'
       ? createResponse(res, StatusCodes.OK, 'Payment success.')
       : createResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, 'Payment failed.');
   } catch (err) {
-    console.error(err);
+    console.log(`pay: Error: ${err}`);
     if (err instanceof ZodError) {
       return createResponse(res, StatusCodes.BAD_REQUEST, 'Invalid booking id.');
     }
