@@ -36,23 +36,17 @@ func AcceptPayment(msgs <-chan amqp.Delivery) {
 			continue
 		}
 
-		if msgData.Status == "Success" || msgData.Status == "Fail" {
+		if msgData.Status == "success" || msgData.Status == "failed" {
 			// Save the successfully created booking
 			db := database.GetInstance()
 			result := db.Create(&models.BookingHistory{
 				UserID: msgData.UserID,
-				Status: msgData.Status == "Success",
+				Status: msgData.Status == "success",
 			})
 
 			// Check if the booking is successfully saved
 			if result.Error == nil {
-				err := lib.SendEmail(user.Email, "Booking Failed", msgData.PdfURL)
-				if err != nil {
-					log.Println(err.Error())
-					continue
-				}
-
-				err = lib.SendEmail(user.Email, "Booking Status", msgData.PdfURL)
+				err := lib.SendEmail(user.Email, "Booking Status", msgData.PdfURL)
 				if err != nil {
 					log.Println(err.Error())
 					continue
