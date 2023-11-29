@@ -42,3 +42,9 @@
 2. Write down environment variables in `.env` files. Follow examples from files named `.env.example`.
 3. Change current directory to `/config`.
 4. Run `docker compose up --build`.
+
+## Seeding Command
+
+1. Open terminal (bash) of `ticket_app`.
+2. Run `npm run build`.
+3. Run `npm run drizzle:seed`.
