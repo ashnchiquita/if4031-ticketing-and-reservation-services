@@ -24,6 +24,8 @@ func AcceptPayment(msgs <-chan amqp.Delivery) {
 			msgData AcceptPaymentMessage
 		)
 
+		log.Printf("[*] Received message on payment: %s", msg.Body)
+
 		json.Unmarshal(msg.Body, &msgData)
 
 		db := database.GetInstance()
