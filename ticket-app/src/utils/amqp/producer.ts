@@ -1,11 +1,14 @@
 import env from '@/config/env'
-import amqp, { Connection } from 'amqplib/callback_api'
+import amqp, {Connection} from 'amqplib/callback_api'
 
 const createMQProducer = (amqpUrl: string, queueName: string) => {
   console.log('Connecting to RabbitMQ...')
+  console.log('hei')
+  amqpUrl = 'amqp://rabbit:rabbit@localhost:5673'
   let ch: any
   amqp.connect(amqpUrl, (errorConnect: Error, connection: Connection) => {
     if (errorConnect) {
+      console.log('errrcon', amqpUrl)
       console.log('Error connecting to RabbitMQ: ', errorConnect)
       return
     }
@@ -26,6 +29,6 @@ const createMQProducer = (amqpUrl: string, queueName: string) => {
   }
 }
 
-export const bookingMQProducer = createMQProducer(env.RABBITMQ_URL, "booking_message")
+export const bookingMQProducer = createMQProducer(env.RABBITMQ_URL, 'booking_message')
 
 export default createMQProducer

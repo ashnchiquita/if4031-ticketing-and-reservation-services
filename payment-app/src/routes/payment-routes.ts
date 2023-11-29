@@ -5,7 +5,8 @@ import { types } from 'cassandra-driver';
 import { ZodError } from 'zod';
 import { createResponse } from '../utils/create-response';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
-import jwt from 'jsonwebtoken';
+import jwt, { JsonWebTokenError } from 'jsonwebtoken';
+import updateWebhook from '../utils/webhook';
 
 const controller = new InvoicesController();
 
@@ -24,6 +25,8 @@ export async function createInvoice(req: Request, res: Response) {
     await controller.create(types.Uuid.fromString(body.bookingId));
 
     const invoice = await controller.get(types.Uuid.fromString(body.bookingId));
+
+    if (!invoice) throw new Error();
 
     // generate jwt token
     const token = jwt.sign(invoice, process.env.JWT_SECRET as string);
@@ -60,23 +63,45 @@ export async function pay(req: Request, res: Response) {
     // Check if link has been clicked before
     const data = await controller.get(types.Uuid.fromString(body.bookingId));
     if (data.status !== 'pending') {
+      console.log('Link already clicked');
       return createResponse(res, StatusCodes.BAD_REQUEST, 'Payment already performed.');
     }
 
+    let paymentStatus = 'success';
     // Simulate 20% failure rate if token verified
     if (Math.floor(Math.random() * 5) === 1) {
-      return createResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, 'Payment failed.');
+      paymentStatus = 'failed';
     }
 
-    const invoice = await controller.update(types.Uuid.fromString(body.bookingId), 'success');
+    console.log('paymentStatus after random = ', paymentStatus);
+    await controller.update(types.Uuid.fromString(body.bookingId), paymentStatus);
 
-    // TODO: call webhook
+    console.log('Start fetching webhook...');
+    const webhookRes = await updateWebhook(
+      body.bookingId,
+      paymentStatus,
+      `${paymentStatus.charAt(0).toUpperCase()}${paymentStatus.slice(1)}`,
+    );
 
-    return createResponse(res, StatusCodes.OK, 'Payment success.');
+    if (!webhookRes.ok) {
+      // TODO: enqueue
+      console.log(webhookRes);
+      console.log('webhook failed');
+    }
+
+    return paymentStatus === 'success'
+      ? createResponse(res, StatusCodes.OK, 'Payment success.')
+      : createResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, 'Payment failed.');
   } catch (err) {
+    console.error(err);
     if (err instanceof ZodError) {
       return createResponse(res, StatusCodes.BAD_REQUEST, 'Invalid booking id.');
     }
-    return createResponse(res, StatusCodes.UNAUTHORIZED, ReasonPhrases.UNAUTHORIZED);
+
+    if (err instanceof JsonWebTokenError) {
+      return createResponse(res, StatusCodes.UNAUTHORIZED, ReasonPhrases.UNAUTHORIZED);
+    }
+
+    return createResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, 'Internal server error, try again later.');
   }
 }
